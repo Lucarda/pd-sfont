@@ -1,6 +1,6 @@
-lib.name = fluid~
+lib.name = fluidsynth~
 
-class.sources = fluid~.c
+class.sources = fluidsynth~.c
 
 ldlibs = -lfluidsynth
 
@@ -30,7 +30,7 @@ define forDarwin
 
 endef
 
-datafiles = fluid~-help.pd LICENSE.txt README.md 
+datafiles = fluidsynth~-help.pd LICENSE.txt README.md 
 datadirs = sf2
 
 include pd-lib-builder/Makefile.pdlibbuilder

@@ -361,8 +361,8 @@ static void *fluid_tilde_new(t_symbol *s, int argc, t_atom *argv){
     return(void *)x;
 }
  
-void fluid_tilde_setup(void){
-    fluid_tilde_class = class_new(gensym("fluid~"), (t_newmethod)fluid_tilde_new,
+void fluidsynth_tilde_setup(void){
+    fluid_tilde_class = class_new(gensym("fluidsynth~"), (t_newmethod)fluid_tilde_new,
         (t_method)fluid_tilde_free, sizeof(t_fluid_tilde), CLASS_DEFAULT, A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_tilde_dsp, gensym("dsp"), A_CANT, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_init, gensym("init"), A_GIMME, 0);

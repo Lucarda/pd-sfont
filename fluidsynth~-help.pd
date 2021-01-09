@@ -1,5 +1,5 @@
 #N canvas 715 23 558 571 10;
-#X declare -lib fluid~;
+#X declare -lib fluidsynth~;
 #X obj 2 544 cnv 15 552 21 empty \$0-pddp.cnv.footer empty 20 12 0
 14 -228856 -66577 0;
 #X obj 2 3 cnv 15 552 27 empty \$0-pddp.cnv.header fluid~ 8 14 0 18
@@ -308,8 +308,7 @@ see: <https://bitbucket.org/agraef/pd-smmf>., f 55;
 #X text 33 16 By default \, [fluid~] runs in "legacy" mode \, which
 is 100% backwards compatible to the original object by Frank Barknecht
 (2003)., f 55;
-#X obj 79 205 fluid~ -smmf sf2/R-piano.sf2, f 15;
-#X text 180 217 <= using the ".sf2" extension explicitly, f 20;
+#X text 207 253 <= using the ".sf2" extension explicitly, f 20;
 #N canvas 1124 230 453 297 out 0;
 #X obj 54 207 *~;
 #X obj 105 36 inlet~;
@@ -752,10 +751,11 @@ is 100% backwards compatible to the original object by Frank Barknecht
 #X connect 10 0 6 0;
 #X coords 0 -1 1 1 94 36 2 250 60;
 #X restore 79 249 pd out;
-#X connect 0 0 6 0;
-#X connect 1 0 6 0;
-#X connect 6 0 8 0;
-#X connect 6 1 8 1;
+#X obj 79 205 fluidsynth~ -smmf sf2/R-piano.sf2, f 18;
+#X connect 0 0 8 0;
+#X connect 1 0 8 0;
+#X connect 8 0 7 0;
+#X connect 8 1 7 1;
 #X restore 472 173 pd SMMF-mode;
 #X text 315 77 <= open;
 #X text 72 114 <= get more;
@@ -775,8 +775,6 @@ is 100% backwards compatible to the original object by Frank Barknecht
 , f 73;
 #X text 224 201 print help information on terminal window, f 53;
 #X text 108 229 init <flag \, arg> -;
-#X obj 422 45 declare -lib fluid~;
-#X obj 226 128 fluid~ sf2/Famicom;
 #X text 345 128 <= extension implied;
 #N canvas 1124 230 453 297 out 0;
 #X obj 54 207 *~;
@@ -1234,8 +1232,10 @@ same \, 'bend' is <value \, ch>, f 53;
 \, ch>;
 #X text 224 406 "smmf" mode only: key aftertouch <value \, key# \,
 ch>, f 53;
+#X obj 226 128 fluidsynth~ sf2/Famicom;
+#X obj 422 45 declare -lib fluidsynth~;
 #X connect 11 0 12 0;
-#X connect 27 0 54 0;
-#X connect 35 0 54 0;
-#X connect 54 0 56 0;
-#X connect 54 1 56 1;
+#X connect 27 0 62 0;
+#X connect 35 0 62 0;
+#X connect 62 0 54 0;
+#X connect 62 1 54 1;
