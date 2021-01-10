@@ -72,31 +72,17 @@ and install the **ntldd** package:
 
 `pacman -S mingw64/mingw-w64-x86_64-ntldd-git` 
 
-Then you can do with MinGW: 
+Then `cd` MinGW to this repo and do: 
 
-`make install`
+`make`
 
 or you can also specify more options with:
 
-`make PDDIR=<path/to/pd directory> PDLIBDIR=<path/to/output> install`
+`make PDDIR=<path/to/pd directory> PDLIBDIR=<path/to/output>`
 
-then on the MinGW shell `cd` to your lib installation dir and run the dependencies script:
+then do this command that fills dependencies on the installation dir:
 
-for 32bit
-
-`````
-cd <to/your/lib/installation/dir>
-./windep32.sh
-
-`````
-
-for 64bit
-
-`````
-cd <to/your/lib/installation/dir>
-./windep64.sh
-
-`````
+`make windep`
 
 
 
