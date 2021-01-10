@@ -37,7 +37,7 @@ typedef struct _fluid_tilde{
     t_canvas           *x_canvas;
     int                 x_sysex;
     int                 x_ready;
-    t_atom              x_at;
+    t_atom              x_at[MAXSYSEXSIZE];
     unsigned char       x_type;
     unsigned char       x_data;
     unsigned char       x_channel;
@@ -73,10 +73,12 @@ static void fluid_note(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     s = NULL;
     if(x->x_synth == NULL)
         return;
+    post("ac = %d (%d %d %d)", ac, atom_getintarg(0, ac, av), atom_getintarg(1, ac, av), atom_getintarg(2, ac, av));
     if(ac == 2 || ac == 3){
         int key = atom_getintarg(0, ac, av);
         int vel = atom_getintarg(1, ac, av);
         int chan = ac > 2 ? atom_getintarg(2, ac, av) : 1;
+        post("key (%d) vel (%d) chan (%d)", key, vel, chan);
         fluid_synth_noteon(x->x_synth, chan-1, key, vel);
     }
 }
@@ -184,15 +186,31 @@ static void fluid_sysex(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
 static void fluid_float(t_fluid_tilde *x, t_float f){
     if(f >= 0 && f <= 255){
         unsigned char val = (unsigned char)f;
-        if(val > 128){ // not a data type
+        if(val > 127){ // not a data type
             x->x_type = val & 0xF0; // get type
             x->x_channel = (val & 0x0F) + 1; // get channel
             x->x_ready = (x->x_type == 0xC0 || x->x_type == 0xD0); // ready if program or touch
         }
         else if(x->x_ready){
             switch(x->x_type){
+                case 0x80: // NOTE OFF
+                    SETFLOAT(&x->x_at[0], (t_float)x->x_data);
+                    SETFLOAT(&x->x_at[1], 0); // make it note on with velocity 0
+                    SETFLOAT(&x->x_at[3], (t_float)x->x_channel);
+                    post("OFF x->x_data (%d) val (%d) x->x_channel (%d)", (int)x->x_data, (int)val, (int)x->x_channel);
+                    fluid_note(x, &s_list, 2, x->x_at);
+                    break;
+                case 0x90: // group 144 (NOTE ON)
+                    SETFLOAT(&x->x_at[0], (t_float)x->x_data);
+                    SETFLOAT(&x->x_at[1], val);
+                    SETFLOAT(&x->x_at[3], (t_float)x->x_channel);
+                    post("ON x->x_data (%d) val (%d) x->x_channel (%d)", (int)x->x_data, (int)val, (int)x->x_channel);
+                    fluid_note(x, &s_list, 2, x->x_at);
+                    break;
                 case 0xE0: // pitch bend
-                    post("pitch bend %d", (val << 7) + x->x_data, x->x_channel);
+                    SETFLOAT(&x->x_at[0], (val << 7) + x->x_data);
+                    SETFLOAT(&x->x_at[1], x->x_channel);
+                    fluid_pitch_bend(x, &s_list, 2, x->x_at);
                     break;
                 default:
                     break;
