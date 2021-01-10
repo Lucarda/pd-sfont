@@ -1,8 +1,8 @@
-// Copyright: Alexandre Torres Porres, based on the work of
-// Frank Barknecht, Jonathan Wilkes and Albert Gräf
-// Distributed under the GPLv2+, please see LICENSE below.
-
 /*
+Copyright: Alexandre Torres Porres, based on the work of
+ Frank Barknecht, Jonathan Wilkes and Albert Gräf
+ Distributed under the GPLv2+, please see LICENSE below.
+
 LICENSE:
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
