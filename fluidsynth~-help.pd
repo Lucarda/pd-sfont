@@ -1,4 +1,4 @@
-#N canvas 735 73 561 509 10;
+#N canvas 701 73 561 504 10;
 #X obj 306 4 cnv 15 250 40 empty empty empty 12 13 0 18 -128992 -233080
 0;
 #N canvas 382 141 749 319 (subpatch) 0;
@@ -25,23 +25,23 @@
 #X restore 2 3 graph;
 #X obj 110 40 cnv 4 4 4 empty empty synthesizer 0 28 2 18 -233017 -1
 0;
-#X obj 2 256 cnv 3 550 3 empty \$0-pddp.cnv.inlets inlets 8 12 0 13
+#X obj 2 257 cnv 3 550 3 empty \$0-pddp.cnv.inlets inlets 8 12 0 13
 -228856 -1 0;
-#X obj 2 404 cnv 3 550 3 empty \$0-pddp.cnv.outlets outlets 8 12 0
+#X obj 2 405 cnv 3 550 3 empty \$0-pddp.cnv.outlets outlets 8 12 0
 13 -228856 -1 0;
 #X obj 2 453 cnv 3 550 3 empty \$0-pddp.cnv.argument arguments 8 12
 0 13 -228856 -1 0;
-#X obj 73 262 cnv 17 3 138 empty \$0-pddp.cnv.let.0 0 5 9 0 16 -228856
+#X obj 73 263 cnv 17 3 138 empty \$0-pddp.cnv.let.0 0 5 9 0 16 -228856
 -162280 0;
-#X obj 100 411 cnv 17 3 17 empty \$0-pddp.cnv.let.n 0 5 9 0 16 -228856
+#X obj 100 412 cnv 17 3 17 empty \$0-pddp.cnv.let.n 0 5 9 0 16 -228856
 -162280 0;
 #X obj 100 432 cnv 17 3 17 empty \$0-pddp.cnv.let.r 1 5 9 0 16 -228856
 -162280 0;
-#X text 176 411 signal;
+#X text 176 412 signal;
 #X text 176 431 signal;
-#X text 135 274 load <symbol> -;
-#X text 141 386 sysex <list> -;
-#N canvas 998 366 476 442 MIDI-Input 0;
+#X text 135 275 load <symbol> -;
+#X text 141 387 sysex <list> -;
+#N canvas 203 85 476 442 MIDI-Input 0;
 #X floatatom 120 191 0 0 8 0 - - -;
 #X floatatom 128 246 5 1 4 0 - - -;
 #X obj 59 381 outlet;
@@ -79,8 +79,8 @@ below:;
 #X connect 8 0 2 0;
 #X connect 9 0 2 0;
 #X restore 232 109 pd MIDI-Input;
-#X text 99 288 bank <float \, float> -;
-#X text 93 358 touch <float \, float> -;
+#X text 99 289 bank <float \, float> -;
+#X text 93 359 touch <float \, float> -;
 #N canvas 910 74 493 229 other-messages 0;
 #X msg 70 117 load \$1;
 #X obj 70 61 openpanel;
@@ -99,18 +99,18 @@ and ".sf3" extensions. This is the same for the argument., f 38;
 #X connect 6 0 4 0;
 #X connect 8 0 0 0;
 #X restore 249 134 pd other-messages;
-#X text 158 461 1) symbol;
-#X text 219 461 - soundfont file to load (default none);
+#X text 158 460 1) symbol;
+#X text 219 460 - soundfont file to load (default none);
 #X text 219 431 - right output signal os stereo output, f 39;
-#X text 219 410 - left output signal os stereo output, f 39;
-#X text 99 372 polytouch <f \, f \, f> -;
-#X text 233 274 loads soundfont file (.sf2/.sf3 extensions implied)
+#X text 219 411 - left output signal os stereo output, f 39;
+#X text 99 373 polytouch <f \, f \, f> -;
+#X text 233 275 loads soundfont file (.sf2/.sf3 extensions implied)
 ;
-#X obj 4 483 cnv 15 552 21 empty empty empty 20 12 0 14 -233017 -33289
+#X obj 4 479 cnv 15 552 21 empty empty empty 20 12 0 14 -233017 -33289
 0;
-#X text 189 260 info -;
-#X text 233 260 print information on terminal window, f 51;
-#X obj 236 196 else/out~;
+#X text 189 261 info -;
+#X text 233 261 print information on terminal window, f 51;
+#X obj 235 196 else/out~;
 #N canvas 1151 160 389 229 more 0;
 #X obj 121 117 bng 20 250 50 0 empty empty empty 17 7 0 10 -228856
 -1 -1;
@@ -133,19 +133,19 @@ are not familiar with it \, check <https://freepats.zenvoid.org/sf2/SF2_Intro.tx
 #X obj 232 160 else/fluidsynth~ sf2/Famicom.sf2, f 16;
 #X text 35 84 [fluidsynth~] is a synth based on fluidsynth (see www.fluidsynth.org)
 that loads soundfont files., f 74;
-#X text 99 330 note/list <f \, f \, f> -;
-#X text 147 344 bend <f \, f> -;
-#X text 233 330 note <key \, velocity \, channel>, f 51;
-#X text 233 302 program change <program \, channel>, f 51;
-#X text 233 288 bank number <bank \, channel>, f 51;
-#X text 233 316 control change <value \, control \, channel>, f 51
+#X text 99 331 note/list <f \, f \, f> -;
+#X text 147 345 bend <f \, f> -;
+#X text 233 331 note <key \, velocity \, channel>, f 51;
+#X text 233 303 program change <program \, channel>, f 51;
+#X text 233 289 bank number <bank \, channel>, f 51;
+#X text 233 317 control change <value \, control \, channel>, f 51
 ;
-#X text 233 344 bend <value \, channel>, f 51;
-#X text 233 358 channel aftertouch <value \, channel>, f 51;
-#X text 233 372 key aftertouch <value \, key \, channel>, f 51;
-#X text 233 386 sets sysex messages, f 51;
-#X text 105 302 pgm <float \, float> -;
-#X text 135 316 ctl <f \, f \, f> -;
+#X text 233 345 bend <value \, channel>, f 51;
+#X text 233 359 channel aftertouch <value \, channel>, f 51;
+#X text 233 373 key aftertouch <value \, key \, channel>, f 51;
+#X text 233 387 sets sysex messages, f 51;
+#X text 105 303 pgm <float \, float> -;
+#X text 135 317 ctl <f \, f \, f> -;
 #X connect 22 0 37 0;
 #X connect 25 0 37 0;
 #X connect 37 0 35 0;
