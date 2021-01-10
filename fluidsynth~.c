@@ -264,8 +264,6 @@ void fluidsynth_tilde_setup(void){
     class_addmethod(fluid_tilde_class, (t_method)fluid_tilde_dsp, gensym("dsp"), A_CANT, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_load, gensym("load"), A_GIMME, 0);
 //    class_addmethod(fluid_tilde_class, (t_method)fluid_gen, gensym("gen"), A_GIMME, 0);
-    class_addmethod(fluid_tilde_class, (t_method)fluid_program_change, gensym("prog"), A_GIMME, 0);
-    class_addmethod(fluid_tilde_class, (t_method)fluid_control_change, gensym("control"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_bank, gensym("bank"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_note, gensym("note"), A_GIMME, 0);
     class_addlist(fluid_tilde_class, (t_method)fluid_note); // same as note

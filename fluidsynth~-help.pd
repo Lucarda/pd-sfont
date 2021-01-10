@@ -41,19 +41,17 @@
 #X text 176 431 signal;
 #X text 135 274 load <symbol> -;
 #X text 141 386 sysex <list> -;
-#N canvas 566 134 628 489 MIDI-Input 0;
-#X floatatom 147 245 0 0 8 0 - - -;
-#X floatatom 155 300 5 1 4 0 - - -;
-#X msg 155 324 bank 1 \$1;
-#X obj 86 435 outlet;
-#X text 93 38 These are the basic messages for setting the sounds of
+#N canvas 998 366 476 442 MIDI-Input 0;
+#X floatatom 120 191 0 0 8 0 - - -;
+#X floatatom 128 246 5 1 4 0 - - -;
+#X obj 59 381 outlet;
+#X text 66 26 These are the basic messages for setting the sounds of
 the fluidsynth soundfont synthesizer. The MIDI input from Pd needs
 to be configured in Preferences => MIDI., f 54;
-#X text 351 318 (the loaded soundfonts loaded in this help file only
+#X text 187 247 (the loaded soundfonts loaded in this help file only
 have 1 bank \, so this does nothing here), f 32;
-#X text 218 324 channel \, bank number;
-#X text 176 245 <= change sound program directly;
-#X obj 86 96 else/keyboard 17 80 3 3 0 0 empty empty;
+#X text 149 191 <= change sound program directly;
+#X obj 59 84 else/keyboard 17 80 3 3 0 0 empty empty;
 #N canvas 1115 171 633 485 mts-tuning 0;
 #X msg 58 102 sysex 127 127 8 8 3 127 127 64 64 64 64 64 64 64 64 64
 64 64 64, f 33;
@@ -71,14 +69,15 @@ below:;
 #X text 182 271 247 is end of sysex message;
 #X connect 0 0 4 0;
 #X connect 1 0 4 0;
-#X restore 174 369 pd mts-tuning;
-#X msg 147 269 prog \$1;
-#X connect 0 0 10 0;
-#X connect 1 0 2 0;
-#X connect 2 0 3 0;
-#X connect 8 0 3 0;
-#X connect 9 0 3 0;
-#X connect 10 0 3 0;
+#X restore 147 315 pd mts-tuning;
+#X msg 120 215 pgm \$1;
+#X msg 128 270 bank \$1;
+#X connect 0 0 8 0;
+#X connect 1 0 9 0;
+#X connect 6 0 2 0;
+#X connect 7 0 2 0;
+#X connect 8 0 2 0;
+#X connect 9 0 2 0;
 #X restore 232 109 pd MIDI-Input;
 #X text 99 288 bank <float \, float> -;
 #X text 93 358 touch <float \, float> -;
