@@ -1,8 +1,23 @@
-// Original version by Frank Barknecht (fbar@footils.org) 2003
-// Ported from Flext/C++ to plain C/pdlibbuilder by Jonathan Wilkes 2016 for Purr Data
-// SMMF mode and various other little improvements by Albert Gräf 2020
-// Revised by Porres and ported to distribute for Pd Vanilla 2021
-// Distributed under the GPLv2+, please check the LICENSE file for details.
+// Copyright: Alexandre Torres Porres, based on the work of
+// Frank Barknecht, Jonathan Wilkes and Albert Gräf
+// Distributed under the GPLv2+, please see LICENSE below.
+
+/*
+LICENSE:
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
 
 #include "m_pd.h"
 #include <fluidsynth.h>
@@ -41,42 +56,8 @@ static void fluid_tilde_free(t_fluid_tilde *x){
         delete_fluid_settings(x->x_settings);
 }
 
-static void fluid_help(void){
-    post("\n");
-    post("---------------------------------------------------------");
-    post(" - [fluid~] 2.0: A soundfont external for Pure Data");
-    post(" based on fluidsynth (https://www.fluidsynth.org)");
-    post(" - fluidsynth version: %s ", FLUIDSYNTH_VERSION);
-    post("---------------------------------------------------------");
-    post("- Initialization arguments:");
-    post("   (optional) -smmf: enables SMMF mode");
-    post("   any other symbol: soundfont file to load on object creation");
-    post("---------------------------------------------------------");
-    post("- MESSAGES:");
-    post("load <symbol>: - Load soundfont file");
-    post("---------------------------------------------------------");
-    post("- LEGACY mode's Control Messages:");
-    post("note <float, float, float>: - Play note <channel, note, velocity>");
-    post("n <float, float, float>: - Same as above (play note)");
-    post("list <float, float, float>: - Same as above (play note)");
-    post("bend <float, float>: - Bend notes <channel, value>");
-    post("b <float, float>: - Bend notes <channel, value>");
-    post("control <float, float, float>: - Control change <channel, control, value>");
-    post("cc <float, float, float>: - Control change <channel, control, value>");
-    post("c <float, float, float>: - Control change <channel, control, value>");
-    post("prog <float, float, float>: - Progam change <channel, program>");
-    post("p <float, float, float>: - Progam change <channel, program>");
-    post("bank <float, float, float>: - Bank change <channel, bank>");
-    post("---------------------------------------------------------");
-    post("- SMMF mode's Control Messages:");
-    post("note <float, float, float>: - Play note <note, velocity, channel>");
-    post("bend <float, float>: - Bend notes <value, channel>");
-    post("pgm <float, float>: - Progam change <program, channel>");
-    post("ctl <float, float>: - Control change <control, value, channel>");
-    post("touch <float, float>: - Channel aftertouch <value, channel>");
-    post("polytouch <float, float, float>: - Key aftertouch <key, value, channel>");
-    post("sysex <list>: - Sysex messages");
-    post("---------------------------------------------------------");
+static void fluid_info(void){
+    post(" - [fluidsynth~] uses fluidsynth version: %s ", FLUIDSYNTH_VERSION);
     post("\n");
 }
 
@@ -241,10 +222,7 @@ static void fluid_bend(t_fluid_tilde *x, t_symbol *s, int argc, t_atom *argv){
     }
 }
 
-// Maximum size of sysex data (excluding the f0 and f7 bytes) that we can
-// handle. The size below should be plenty to handle any kind of MTS message,
-// which at the time of this writing is the only kind of sysex message
-// recognized by fluidsynth.
+// Maximum size of sysex data (excluding the f0 and f7 bytes)
 #define MAXSYSEXSIZE 1024
 
 static void fluid_sysex(t_fluid_tilde *x, t_symbol *s, int argc, t_atom *argv){
@@ -268,7 +246,7 @@ static void fluid_sysex(t_fluid_tilde *x, t_symbol *s, int argc, t_atom *argv){
 static void fluid_load(t_fluid_tilde *x, t_symbol *s, int argc, t_atom *argv){
     s = NULL;
     if(x->x_synth == NULL){
-        pd_error(x, "[fluid~]: no fluidsynth");
+        pd_error(x, "[fluidsynth~]: no fluidsynth");
         return;
     }
     if(argc >= 1 && argv->a_type == A_SYMBOL){
@@ -277,11 +255,10 @@ static void fluid_load(t_fluid_tilde *x, t_symbol *s, int argc, t_atom *argv){
         char realdir[MAXPDSTRING], *realname = NULL;
         int fd;
         if(ext && !strchr(ext, '/')){ // extension already supplied, no default extension
-            post("extension supplied");
             ext = "";
             fd = canvas_open(x->x_canvas, filename, ext, realdir, &realname, MAXPDSTRING, 0);
             if(fd < 0){
-              pd_error(x, "[fluid~]: can't find soundfont %s", filename);
+              pd_error(x, "[fluidsynth~]: can't find soundfont %s", filename);
               return;
             }
         }
@@ -292,7 +269,7 @@ static void fluid_load(t_fluid_tilde *x, t_symbol *s, int argc, t_atom *argv){
                 ext = ".sf3"; // let's try sf3 then
                 fd = canvas_open(x->x_canvas, filename, ext, realdir, &realname, MAXPDSTRING, 0);
                 if(fd < 0){ // also failed
-                    pd_error(x, "[fluid~]: can't find soundfont %s", filename);
+                    pd_error(x, "[fluidsynth~]: can't find soundfont %s", filename);
                    return;
                 }
             }
@@ -302,7 +279,7 @@ static void fluid_load(t_fluid_tilde *x, t_symbol *s, int argc, t_atom *argv){
         sys_close(fd);
         chdir(realdir);
         if(fluid_synth_sfload(x->x_synth, realname, 0) >= 0){
-            post("[fluid~]: loaded soundfont %s", realname);
+            post("[fluidsynth~]: loaded soundfont %s", realname);
             fluid_synth_program_reset(x->x_synth);
         }
         // Restore the working directory.
@@ -312,7 +289,6 @@ static void fluid_load(t_fluid_tilde *x, t_symbol *s, int argc, t_atom *argv){
 
 static void fluid_init(t_fluid_tilde *x, t_symbol *s, int argc, t_atom *argv){
     s = NULL;
-    post("-- initializing [fluid~] for Pd --");
     if(x->x_synth)
         delete_fluid_synth(x->x_synth);
     if(x->x_settings)
@@ -320,7 +296,7 @@ static void fluid_init(t_fluid_tilde *x, t_symbol *s, int argc, t_atom *argv){
     float sr = sys_getsr();
     x->x_settings = new_fluid_settings();
     if(x->x_settings == NULL){
-        pd_error(x, "[fluid~]: couldn't create synth settings\n");
+        pd_error(x, "[fluidsynth~]: couldn't create synth settings\n");
         return;
     }
     else{ // load settings:
@@ -333,7 +309,7 @@ static void fluid_init(t_fluid_tilde *x, t_symbol *s, int argc, t_atom *argv){
         fluid_settings_setstr(x->x_settings, "synth.ladspa.active", "no");
         x->x_synth = new_fluid_synth(x->x_settings); // Create fluidsynth instance:
         if(x->x_synth == NULL){
-            pd_error(x, "[fluid~]: couldn't create synth");
+            pd_error(x, "[fluidsynth~]: couldn't create synth");
             return;
         }
         if(atom_getsymbolarg(0, argc, argv) == gensym("-smmf")){ // check for SMMF mode
@@ -342,9 +318,6 @@ static void fluid_init(t_fluid_tilde *x, t_symbol *s, int argc, t_atom *argv){
             argv++;
         }
         fluid_load(x, gensym("load"), argc, argv); // try to load argument as soundfont
-        if(x->x_synth)  // Done
-            post("-- [fluid~] loaded %s--", x->smmf_mode?" (with SMMF mode)":"");
-        post("----------------------------------------------------");
     }
 }
 
@@ -389,9 +362,5 @@ void fluidsynth_tilde_setup(void){
     class_addmethod(fluid_tilde_class, (t_method)fluid_touch, gensym("touch"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_bend, gensym("bend"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_sysex, gensym("sysex"), A_GIMME, 0);
-    // Simulate Flext's help message
-    class_addmethod(fluid_tilde_class, (t_method)fluid_help, gensym("help"), 0);
-    post("----------------------------------------------------");
-    post("[fluid~] 2.0 for Pd, using fluidsynth version: %s", FLUIDSYNTH_VERSION);
-    post("----------------------------------------------------");
+    class_addmethod(fluid_tilde_class, (t_method)fluid_info, gensym("info"), 0);
 }
