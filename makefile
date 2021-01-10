@@ -6,11 +6,7 @@ ldlibs = -lfluidsynth
 
 define forWindows
 
-ifeq ($(firstword $(subst -, ,$(shell $(CC) -dumpmachine))), i686)
-	datafiles += scripts/localdeps.win.sh dep32.sh
-	else
-	datafiles += scripts/localdeps.win.sh dep64.sh
-endif
+	datafiles += scripts/localdeps.win.sh scripts/windep.sh
 
 endef
 
@@ -34,3 +30,7 @@ datafiles = fluidsynth~-help.pd LICENSE.txt README.md
 datadirs = sf2
 
 include pd-lib-builder/Makefile.pdlibbuilder
+
+
+windep: install
+	cd "${installpath}"; ./windep.sh fluidsynth~.dll 
