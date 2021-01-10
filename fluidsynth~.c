@@ -57,6 +57,7 @@ static void fluid_tilde_free(t_fluid_tilde *x){
 
 static void fluid_info(void){
     post(" - [fluidsynth~] uses fluidsynth version: %s ", FLUIDSYNTH_VERSION);
+    //            post("[fluidsynth~]: loaded soundfont %s", realname);
     post("\n");
 }
 
@@ -64,68 +65,55 @@ static void fluid_note(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     s = NULL;
     if(x->x_synth == NULL)
         return;
-    if(ac == 2){
+    if(ac == 2 || ac == 3){
         int key = atom_getintarg(0, ac, av);
         int vel = atom_getintarg(1, ac, av);
-        fluid_synth_noteon(x->x_synth, 0, key, vel);
-    }
-    else if(ac == 3){
-        int chan = atom_getintarg(0, ac, av);
-        int key = atom_getintarg(1, ac, av);
-        int vel = atom_getintarg(2, ac, av);
+        int chan = ac > 2 ? atom_getintarg(2, ac, av) : 1;
         fluid_synth_noteon(x->x_synth, chan-1, key, vel);
     }
 }
 
-// legacy
 static void fluid_program_change(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     s = NULL;
     if(x->x_synth == NULL)
         return;
-    if(ac == 2){
-        int chan, prog;
-        chan = atom_getintarg(0, ac, av);
-        prog = atom_getintarg(1, ac, av);
+    if(ac == 1 || ac == 2){
+        int prog = atom_getintarg(0, ac, av);
+        int chan = ac > 1 ? atom_getintarg(1, ac, av) : 1;
         fluid_synth_program_change(x->x_synth, chan-1, prog);
     }
 }
 
-// legacy
 static void fluid_control_change(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     s = NULL;
     if(x->x_synth == NULL)
         return;
-    if(ac == 3){
-        int chan, ctrl, val;
-        chan = atom_getintarg(0, ac, av);
-        ctrl = atom_getintarg(1, ac, av);
-        val = atom_getintarg(2, ac, av);
+    if(ac == 2 || ac == 3){
+        int ctrl = atom_getintarg(0, ac, av);
+        int val = atom_getintarg(1, ac, av);
+        int chan = ac > 2 ? atom_getintarg(2, ac, av) : 1;
         fluid_synth_cc(x->x_synth, chan-1, ctrl, val);
     }
 }
 
-// legacy
 static void fluid_pitch_bend(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     s = NULL;
     if(x->x_synth == NULL)
         return;
-    if(ac == 2){
-        int chan, val;
-        chan = atom_getintarg(0, ac, av);
-        val = atom_getintarg(1, ac, av);
+    if(ac == 1 || ac == 2){
+        int val = atom_getintarg(0, ac, av);
+        int chan = ac > 1 ? atom_getintarg(1, ac, av) : 1;
         fluid_synth_pitch_bend(x->x_synth, chan-1, val);
     }
 }
 
-// legacy
 static void fluid_bank(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     s = NULL;
     if(x->x_synth == NULL)
         return;
-    if(ac == 2){
-        int chan, bank;
-        chan = atom_getintarg(0, ac, av);
-        bank = atom_getintarg(1, ac, av);
+    if(ac == 1 || ac == 2){
+        int bank = atom_getintarg(0, ac, av);
+        int chan = ac > 1 ? atom_getintarg(1, ac, av) : 1;
         fluid_synth_bank_select(x->x_synth, chan-1, bank);
     }
 }
@@ -144,7 +132,6 @@ static void fluid_bank(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     }
 }*/
 
-// smmf
 static void fluid_touch(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     s = NULL;
     if(x->x_synth == NULL)
@@ -156,7 +143,6 @@ static void fluid_touch(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     }
 }
 
-// smmf
 static void fluid_polytouch(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     s = NULL;
     if(x->x_synth == NULL)
@@ -164,7 +150,7 @@ static void fluid_polytouch(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     if(ac == 2 || ac == 3){
         int val = atom_getintarg(0, ac, av);
         int key = atom_getintarg(1, ac, av);
-        int chan = ac>2 ? atom_getintarg(2, ac, av) : 1;
+        int chan = ac > 2 ? atom_getintarg(2, ac, av) : 1;
         fluid_synth_key_pressure(x->x_synth, chan-1, key, val);
     }
 }
@@ -225,12 +211,9 @@ static void fluid_load(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
         char buf[MAXPDSTRING], *cwd = getcwd(buf, MAXPDSTRING);
         sys_close(fd);
         chdir(realdir);
-        if(fluid_synth_sfload(x->x_synth, realname, 0) >= 0){
-            post("[fluidsynth~]: loaded soundfont %s", realname);
+        if(fluid_synth_sfload(x->x_synth, realname, 0) >= 0)
             fluid_synth_program_reset(x->x_synth);
-        }
-        // Restore the working directory.
-        cwd && chdir(cwd);
+        cwd && chdir(cwd); // Restore the working directory.
     }
 }
 

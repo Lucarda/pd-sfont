@@ -1,4 +1,4 @@
-#N canvas 735 62 561 509 10;
+#N canvas 735 73 561 509 10;
 #X obj 306 4 cnv 15 250 40 empty empty empty 12 13 0 18 -128992 -233080
 0;
 #N canvas 382 141 749 319 (subpatch) 0;
@@ -39,12 +39,7 @@
 -162280 0;
 #X text 176 411 signal;
 #X text 176 431 signal;
-#X text 81 316 control/cc/c <f \, f \, f> -;
-#X text 233 302 program change <ch \, value>, f 51;
-#X text 233 316 control change <ch \, control# \, value>, f 51;
-#X text 233 288 bank number <ch \, value>, f 51;
 #X text 135 274 load <symbol> -;
-#X text 135 344 bend/b <f \, f> -;
 #X text 141 386 sysex <list> -;
 #N canvas 566 134 628 489 MIDI-Input 0;
 #X floatatom 147 245 0 0 8 0 - - -;
@@ -59,7 +54,6 @@ have 1 bank \, so this does nothing here), f 32;
 #X text 218 324 channel \, bank number;
 #X text 176 245 <= change sound program directly;
 #X obj 86 96 else/keyboard 17 80 3 3 0 0 empty empty;
-#X msg 86 203 note 1 \$1 \$2;
 #N canvas 1115 171 633 485 mts-tuning 0;
 #X msg 58 102 sysex 127 127 8 8 3 127 127 64 64 64 64 64 64 64 64 64
 64 64 64, f 33;
@@ -78,17 +72,15 @@ below:;
 #X connect 0 0 4 0;
 #X connect 1 0 4 0;
 #X restore 174 369 pd mts-tuning;
-#X msg 147 269 prog 1 \$1;
-#X connect 0 0 11 0;
+#X msg 147 269 prog \$1;
+#X connect 0 0 10 0;
 #X connect 1 0 2 0;
 #X connect 2 0 3 0;
-#X connect 8 0 9 0;
+#X connect 8 0 3 0;
 #X connect 9 0 3 0;
 #X connect 10 0 3 0;
-#X connect 11 0 3 0;
 #X restore 232 109 pd MIDI-Input;
 #X text 99 288 bank <float \, float> -;
-#X text 87 302 prog/p <float \, float> -;
 #X text 93 358 touch <float \, float> -;
 #N canvas 910 74 493 229 other-messages 0;
 #X msg 70 117 load \$1;
@@ -117,14 +109,11 @@ and ".sf3" extensions. This is the same for the argument., f 38;
 ;
 #X obj 4 483 cnv 15 552 21 empty empty empty 20 12 0 14 -233017 -33289
 0;
-#X text 233 344 bend <ch \, value>, f 51;
-#X text 233 330 note <ch \, key# \, velocity>, f 51;
-#X text 87 330 note/n/list <f \, f \, f> -;
 #X text 189 260 info -;
 #X text 233 260 print information on terminal window, f 51;
 #X obj 236 196 else/out~;
-#N canvas 1151 160 533 256 more 0;
-#X obj 154 132 bng 20 250 50 0 empty empty empty 17 7 0 10 -228856
+#N canvas 1151 160 389 229 more 0;
+#X obj 121 117 bng 20 250 50 0 empty empty empty 17 7 0 10 -228856
 -1 -1;
 #N canvas 632 283 328 159 musescore.org 0;
 #X obj 64 114 pdcontrol;
@@ -133,22 +122,32 @@ and ".sf3" extensions. This is the same for the argument., f 38;
 , f 34;
 #X connect 1 0 2 0;
 #X connect 2 0 0 0;
-#X restore 154 173 pd musescore.org;
-#X text 179 133 <= get more;
-#X text 198 145 soundfonts;
-#X text 60 29 You need SoundFont files to load into [fluidsynth~].
+#X restore 121 158 pd musescore.org;
+#X text 146 118 <= get more;
+#X text 165 130 soundfonts;
+#X text 25 32 You need SoundFont files to load into [fluidsynth~].
 SoundFont is a file format for sample-based instrument sounds. If you
 are not familiar with it \, check <https://freepats.zenvoid.org/sf2/SF2_Intro.txt>.
-, f 72;
+;
 #X connect 0 0 1 0;
-#X restore 431 212 pd more info;
-#X text 233 358 channel aftertouch <ch \, value \, ch>, f 51;
-#X text 233 372 key aftertouch <ch \, value \, key#>, f 51;
-#X text 233 386 sysex messages, f 51;
+#X restore 462 226 pd more info;
 #X obj 232 160 else/fluidsynth~ sf2/Famicom.sf2, f 16;
 #X text 35 84 [fluidsynth~] is a synth based on fluidsynth (see www.fluidsynth.org)
 that loads soundfont files., f 74;
-#X connect 27 0 49 0;
-#X connect 31 0 49 0;
-#X connect 49 0 44 0;
-#X connect 49 1 44 1;
+#X text 99 330 note/list <f \, f \, f> -;
+#X text 147 344 bend <f \, f> -;
+#X text 233 330 note <key \, velocity \, channel>, f 51;
+#X text 233 302 program change <program \, channel>, f 51;
+#X text 233 288 bank number <bank \, channel>, f 51;
+#X text 233 316 control change <value \, control \, channel>, f 51
+;
+#X text 233 344 bend <value \, channel>, f 51;
+#X text 233 358 channel aftertouch <value \, channel>, f 51;
+#X text 233 372 key aftertouch <value \, key \, channel>, f 51;
+#X text 233 386 sets sysex messages, f 51;
+#X text 105 302 pgm <float \, float> -;
+#X text 135 316 ctl <f \, f \, f> -;
+#X connect 22 0 37 0;
+#X connect 25 0 37 0;
+#X connect 37 0 35 0;
+#X connect 37 1 35 1;
