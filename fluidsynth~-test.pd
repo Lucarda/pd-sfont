@@ -1,0 +1,14 @@
+#N canvas 701 73 586 493 10;
+#X obj 117 354 else/out~;
+#X obj 114 318 else/fluidsynth~ sf2/Famicom.sf2, f 16;
+#X obj 114 74 else/keyboard 17 80 3 3 0 0 empty empty;
+#X obj 217 268 else/bend.out -raw;
+#X floatatom 217 240 0 0 0 0 - - -;
+#X obj 220 213 hsl 128 15 0 16383 0 0 empty empty empty -2 -8 0 10
+-228856 -1 -1 5400 1;
+#X connect 1 0 0 0;
+#X connect 1 1 0 1;
+#X connect 2 0 1 0;
+#X connect 3 0 1 0;
+#X connect 4 0 3 0;
+#X connect 5 0 4 0;

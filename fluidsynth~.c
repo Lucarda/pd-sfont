@@ -23,16 +23,24 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 #include <fluidsynth.h>
 #include <string.h>
 #include <unistd.h>
- 
+
+#define MAXSYSEXSIZE 1024 // Size of sysex data list (excluding the F0 [240] and F7 [247] bytes)
+
 static t_class *fluid_tilde_class;
  
 typedef struct _fluid_tilde{
-    t_object x_obj;
-    fluid_synth_t *x_synth;
-    fluid_settings_t *x_settings;
-    t_outlet *x_out_left;
-    t_outlet *x_out_right;
-    t_canvas *x_canvas;
+    t_object            x_obj;
+    fluid_synth_t      *x_synth;
+    fluid_settings_t   *x_settings;
+    t_outlet           *x_out_left;
+    t_outlet           *x_out_right;
+    t_canvas           *x_canvas;
+    int                 x_sysex;
+    int                 x_ready;
+    t_atom              x_at;
+    unsigned char       x_type;
+    unsigned char       x_data;
+    unsigned char       x_channel;
 }t_fluid_tilde;
 
 t_int *fluid_tilde_perform(t_int *w){
@@ -155,9 +163,6 @@ static void fluid_polytouch(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     }
 }
 
-// Maximum size of sysex data (excluding the f0 and f7 bytes)
-#define MAXSYSEXSIZE 1024
-
 static void fluid_sysex(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     s = NULL;
     if(x->x_synth == NULL)
@@ -174,6 +179,33 @@ static void fluid_sysex(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
         // control outlet (which doesn't exist at present).
         fluid_synth_sysex(x->x_synth, buf, len, NULL, NULL, NULL, 0);
     }
+}
+
+static void fluid_float(t_fluid_tilde *x, t_float f){
+    if(f >= 0 && f <= 255){
+        unsigned char val = (unsigned char)f;
+        if(val > 128){ // not a data type
+            x->x_type = val & 0xF0; // get type
+            x->x_channel = (val & 0x0F) + 1; // get channel
+            x->x_ready = (x->x_type == 0xC0 || x->x_type == 0xD0); // ready if program or touch
+        }
+        else if(x->x_ready){
+            switch(x->x_type){
+                case 0xE0: // pitch bend
+                    post("pitch bend %d", (val << 7) + x->x_data, x->x_channel);
+                    break;
+                default:
+                    break;
+            }
+            x->x_type = x->x_ready = 0; // clear
+        }
+        else{ // not ready, get data and make it ready
+            x->x_data = val;
+            x->x_ready = 1;
+        }
+    }
+    else
+        x->x_type = x->x_ready = 0; // clear
 }
 
 static void fluid_load(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
@@ -230,10 +262,11 @@ static void *fluid_tilde_new(t_symbol *s, int ac, t_atom *av){
     t_fluid_tilde *x = (t_fluid_tilde *)pd_new(fluid_tilde_class);
     x->x_synth = NULL;
     x->x_settings = NULL;
+    x->x_sysex = x->x_ready = 0;
+    x->x_data = x->x_channel = x->x_type = 0;
     x->x_out_left = outlet_new(&x->x_obj, &s_signal);
     x->x_out_right = outlet_new(&x->x_obj, &s_signal);
     x->x_canvas = canvas_getcurrent();
-    float sr = sys_getsr();
     x->x_settings = new_fluid_settings();
     if(x->x_settings == NULL){
         pd_error(x, "[fluidsynth~]: couldn't create synth settings\n");
@@ -243,7 +276,7 @@ static void *fluid_tilde_new(t_symbol *s, int ac, t_atom *av){
         fluid_settings_setnum(x->x_settings, "synth.midi-channels", 16);
         fluid_settings_setnum(x->x_settings, "synth.polyphony", 256);
         fluid_settings_setnum(x->x_settings, "synth.gain", 0.600000);
-        fluid_settings_setnum(x->x_settings, "synth.sample-rate", sr != 0 ? sr : 44100.000000);
+        fluid_settings_setnum(x->x_settings, "synth.sample-rate", sys_getsr());
         fluid_settings_setstr(x->x_settings, "synth.chorus.active", "no");
         fluid_settings_setstr(x->x_settings, "synth.reverb.active", "no");
         fluid_settings_setstr(x->x_settings, "synth.ladspa.active", "no");
@@ -262,6 +295,7 @@ void fluidsynth_tilde_setup(void){
     fluid_tilde_class = class_new(gensym("fluidsynth~"), (t_newmethod)fluid_tilde_new,
         (t_method)fluid_tilde_free, sizeof(t_fluid_tilde), CLASS_DEFAULT, A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_tilde_dsp, gensym("dsp"), A_CANT, 0);
+    class_addfloat(fluid_tilde_class, (t_method)fluid_float); // raw midi input
     class_addmethod(fluid_tilde_class, (t_method)fluid_load, gensym("load"), A_GIMME, 0);
 //    class_addmethod(fluid_tilde_class, (t_method)fluid_gen, gensym("gen"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_bank, gensym("bank"), A_GIMME, 0);
