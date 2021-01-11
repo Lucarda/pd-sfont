@@ -36,6 +36,7 @@ typedef struct _fluid_tilde{
     t_outlet           *x_out_right;
     t_canvas           *x_canvas;
     int                 x_sysex;
+    int                 x_count;
     int                 x_ready;
     t_atom              x_at[MAXSYSEXSIZE];
     unsigned char       x_type;
@@ -122,11 +123,12 @@ static void fluid_bank(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     if(ac == 1 || ac == 2){
         int bank = atom_getintarg(0, ac, av);
         int chan = ac > 1 ? atom_getintarg(1, ac, av) : 1;
+//        post("bank (%d) chan (%d)", bank, chan);
         fluid_synth_bank_select(x->x_synth, chan-1, bank);
     }
 }
 
-/*static void fluid_gen(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
+static void fluid_gen(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     s = NULL;
     if(x->x_synth == NULL)
         return;
@@ -138,9 +140,9 @@ static void fluid_bank(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
         value = atom_getintarg(2, ac, av);
         fluid_synth_set_gen(x->x_synth, chan-1, param, value);
     }
-}*/
+}
 
-static void fluid_touch(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
+static void fluid_aftertouch(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     s = NULL;
     if(x->x_synth == NULL)
         return;
@@ -185,39 +187,75 @@ static void fluid_float(t_fluid_tilde *x, t_float f){
     if(f >= 0 && f <= 255){
         unsigned char val = (unsigned char)f;
         if(val > 127){ // not a data type
-            x->x_type = val & 0xF0; // get type
-//            post("x->x_type = %d", (int)x->x_type);
-            x->x_channel = (val & 0x0F) + 1; // get channel
-            x->x_ready = (x->x_type == 0xC0 || x->x_type == 0xD0); // ready if program or touch
+            if(val == 0xF0){ // start of sysex
+                x->x_sysex = 1;
+                x->x_count = 0;
+            }
+            else if(val == 0xF7){ // end of sysex
+                fluid_sysex(x, &s_list, x->x_count, x->x_at);
+                x->x_sysex = x->x_count = 0;
+            }
+            else{
+                x->x_type = val & 0xF0; // get type
+                x->x_channel = (val & 0x0F) + 1; // get channel
+                x->x_ready = (x->x_type == 0xC0 || x->x_type == 0xD0); // ready if program or touch
+            }
         }
-        else if(x->x_ready){
-            switch(x->x_type){
-                case 0x80: // group 128 (NOTE OFF)
-                    SETFLOAT(&x->x_at[0], (t_float)x->x_data);
+        else if(x->x_sysex){
+            SETFLOAT(&x->x_at[x->x_count], (t_float)val);
+            x->x_count++;
+        }
+        else{
+            if(x->x_ready){
+                switch(x->x_type){
+                    case 0x80: // group 128-143 (NOTE OFF)
+                    SETFLOAT(&x->x_at[0], (t_float)x->x_data); // key
                     SETFLOAT(&x->x_at[1], 0); // make it note on with velocity 0
                     SETFLOAT(&x->x_at[2], (t_float)x->x_channel);
                     fluid_note(x, &s_list, 3, x->x_at);
                     break;
-                case 0x90: // group 144 (NOTE ON)
-                    SETFLOAT(&x->x_at[0], (t_float)x->x_data);
-                    SETFLOAT(&x->x_at[1], val);
+                case 0x90: // group 144-159 (NOTE ON)
+                    SETFLOAT(&x->x_at[0], (t_float)x->x_data); // key
+                    SETFLOAT(&x->x_at[1], val); // velocity
                     SETFLOAT(&x->x_at[2], (t_float)x->x_channel);
                     fluid_note(x, &s_list, 3, x->x_at);
                     break;
-                case 0xE0: // pitch bend
+                case 0xA0: // group 160-175 (POLYPHONIC AFTERTOUCH)
+                    SETFLOAT(&x->x_at[0], val); // aftertouch pressure value
+                    SETFLOAT(&x->x_at[1], (t_float)x->x_data); // key
+                    SETFLOAT(&x->x_at[2], (t_float)x->x_channel);
+                    fluid_polytouch(x, &s_list, 3, x->x_at);
+                    break;
+                case 0xB0: // group 176-191 (CONTROL CHANGE)
+                    SETFLOAT(&x->x_at[0], val); // control value
+                    SETFLOAT(&x->x_at[1], (t_float)x->x_data); // control number
+                    SETFLOAT(&x->x_at[2], (t_float)x->x_channel);
+                    fluid_control_change(x, &s_list, 3, x->x_at);
+                    break;
+                case 0xC0: // group 192-207 (PROGRAM CHANGE)
+                    SETFLOAT(&x->x_at[0], val); // control value
+                    SETFLOAT(&x->x_at[1], (t_float)x->x_channel);
+                    fluid_program_change(x, &s_list, 2, x->x_at);
+                    break;
+                case 0xD0: // group 208-223 (AFTERTOUCH)
+                    SETFLOAT(&x->x_at[0], val); // control value
+                    SETFLOAT(&x->x_at[1], (t_float)x->x_channel);
+                    fluid_aftertouch(x, &s_list, 2, x->x_at);
+                    break;
+                case 0xE0: // group 224-239 (PITCH BEND)
                     SETFLOAT(&x->x_at[0], (val << 7) + x->x_data);
                     SETFLOAT(&x->x_at[1], x->x_channel);
                     fluid_pitch_bend(x, &s_list, 2, x->x_at);
                     break;
                 default:
                     break;
+                }
+                x->x_type = x->x_ready = 0; // clear
             }
-            x->x_type = x->x_ready = 0; // clear
-        }
-        else{ // not ready, get data and make it ready
-//        post("x->x_data = %d", (int)x->x_data);
-            x->x_data = val;
-            x->x_ready = 1;
+            else{ // not ready, get data and make it ready
+                x->x_data = val;
+                x->x_ready = 1;
+            }
         }
     }
     else
@@ -278,7 +316,7 @@ static void *fluid_tilde_new(t_symbol *s, int ac, t_atom *av){
     t_fluid_tilde *x = (t_fluid_tilde *)pd_new(fluid_tilde_class);
     x->x_synth = NULL;
     x->x_settings = NULL;
-    x->x_sysex = x->x_ready = 0;
+    x->x_sysex = x->x_ready = x->x_count = 0;
     x->x_data = x->x_channel = x->x_type = 0;
     x->x_out_left = outlet_new(&x->x_obj, &s_signal);
     x->x_out_right = outlet_new(&x->x_obj, &s_signal);
@@ -313,14 +351,14 @@ void fluidsynth_tilde_setup(void){
     class_addmethod(fluid_tilde_class, (t_method)fluid_tilde_dsp, gensym("dsp"), A_CANT, 0);
     class_addfloat(fluid_tilde_class, (t_method)fluid_float); // raw midi input
     class_addmethod(fluid_tilde_class, (t_method)fluid_load, gensym("load"), A_GIMME, 0);
-//    class_addmethod(fluid_tilde_class, (t_method)fluid_gen, gensym("gen"), A_GIMME, 0);
+    class_addmethod(fluid_tilde_class, (t_method)fluid_gen, gensym("gen"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_bank, gensym("bank"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_note, gensym("note"), A_GIMME, 0);
     class_addlist(fluid_tilde_class, (t_method)fluid_note); // same as note
     class_addmethod(fluid_tilde_class, (t_method)fluid_control_change, gensym("ctl"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_program_change, gensym("pgm"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_polytouch, gensym("polytouch"), A_GIMME, 0);
-    class_addmethod(fluid_tilde_class, (t_method)fluid_touch, gensym("touch"), A_GIMME, 0);
+    class_addmethod(fluid_tilde_class, (t_method)fluid_aftertouch, gensym("touch"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_pitch_bend, gensym("bend"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_sysex, gensym("sysex"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_info, gensym("info"), 0);
