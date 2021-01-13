@@ -12,11 +12,7 @@ endef
 
 define forLinux
 
-ifeq ($(firstword $(subst -, ,$(shell $(CC) -dumpmachine))), i686)
-	datafiles += scripts/linuxdep32.sh
-	else
-	datafiles += scripts/linuxdep64.sh
-endif
+	datafiles += scripts/localdeps.linux.sh
 
 endef
 
@@ -26,11 +22,14 @@ define forDarwin
 
 endef
 
-datafiles = fluidsynth~-help.pd LICENSE.txt README.md 
+datafiles = fluidsynth~-help.pd LICENSE.txt README.md
 datadirs = sf2
 
 include pd-lib-builder/Makefile.pdlibbuilder
 
 
 windep: install
-	cd "${installpath}"; ./windep.sh fluidsynth~.dll 
+	cd "${installpath}"; ./windep.sh fluidsynth~.dll
+
+lindep: install
+	cd "${installpath}"; /bin/sh localdeps.linux.sh fluidsynth~.pd_linux
