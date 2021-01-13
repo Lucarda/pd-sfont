@@ -12,6 +12,17 @@ libstdc++\.so.*
 libgcc_s\.so.*
 libpcre\.so.*"
 
+# Check dependencies
+cmdlist="awk grep ldd patchelf"
+for cmd in $cmlist
+do
+  if ! which $cmd > /dev/null
+  then
+    echo "Could not find ${cmd}. Is it installed?" > /dev/stderr
+    exit 1
+  fi
+done
+
 library_in_exclude_list() {
 # arg1: library name
 # returns 0 if arg1 is found in exclude list, otherwise 1
