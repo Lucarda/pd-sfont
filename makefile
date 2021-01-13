@@ -28,8 +28,8 @@ datadirs = sf2
 include pd-lib-builder/Makefile.pdlibbuilder
 
 
-windep: install
+localdep_windows: install
 	cd "${installpath}"; ./windep.sh fluidsynth~.dll
 
-lindep: install
+localdep_linux: install
 	cd "${installpath}"; /bin/sh localdeps.linux.sh fluidsynth~.pd_linux
