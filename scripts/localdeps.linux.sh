@@ -20,12 +20,16 @@ esac
 
 # List of libraries that we do not include into our packaging
 # becaue we think they will be installed on any system
-LD_EXCLUDE_LIST="linux-vdso\.so.*
+LD_EXCLUDE_LIST="linux-gate\.so.*
+linux-vdso\.so.*
 libc.so\.*
-ld-linux-.*\.so.*
+ld-linux.*\.so.*
+libdl\.so.*
 libglib-.*\.so.*
-libpthread\.so.*
+libgomp\.so.*
+libgthread.*\.so.*
 libm\.so.*
+libpthread.*\.so.*
 libstdc++\.so.*
 libgcc_s\.so.*
 libpcre\.so.*"
