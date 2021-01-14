@@ -122,8 +122,7 @@ Now the fluidsynth dependencies are copied to your fluid~ external folder.
 
 ### Acknowledgements :
 
-Thanks to the authors of fluidsynth (https://github.com/FluidSynth/fluidsynth/blob/master/AUTHORS). Also thanks for those who worked on previous externals that loads fluid synth, such as Larry Troxler, author of the [iiwu~] external, which was the basis of the [fluid~] external by Frank Barknecht in [04/04/2003].  Jonathan Wilkes Ported [fluid~] from Flext/C++ to Pd's API using plain C/pdlibbuilder.  Albert Gräf expanded the functionality of the object to take more MIDI messages. Thanks to IOhannes Zmölnig for the magical script that copies the dynamic libraries into the external folder and links them correctly. Thanks to Lucas Cordiviola for helping on how to build for windows/Linux and others from the pd-list that also helped.
-
+Thanks to the **authors of fluidsynth** (https://github.com/FluidSynth/fluidsynth/blob/master/AUTHORS). Also thanks for those who worked on previous externals that loads fluid synth, such as **Larry Troxler**, author of the [iiwu~] external, which was the basis of the [fluid~] external by **Frank Barknecht** in [04/04/2003].  **Jonathan Wilkes** Ported [fluid~] from Flext/C++ to Pd's API using plain C/pdlibbuilder.  **Albert Gräf** expanded the functionality of the object to take more MIDI messages. More thanks to **IOhannes Zmölnig** for the magical script that copies the dynamic libraries into the external folder and links them correctly. Thanks to **Lucas Cordiviola** and **Roman Haefeli** for helping on how to build for windows/Linux and **others from the pd-list** that also helped.
 
 
 --------------------------------------------------------------------------

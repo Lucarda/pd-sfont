@@ -137,8 +137,9 @@ static void fluid_gen(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
         float value;
         chan = atom_getintarg(0, ac, av);
         param = atom_getintarg(1, ac, av);
-        value = atom_getintarg(2, ac, av);
+        value = atom_getfloatarg(2, ac, av);
         fluid_synth_set_gen(x->x_synth, chan-1, param, value);
+        // https://github.com/uliss/pure-data/blob/ceammc/ceammc/ext/src/misc/fluid.cpp#L390
     }
 }
 
@@ -363,3 +364,5 @@ void fluidsynth_tilde_setup(void){
     class_addmethod(fluid_tilde_class, (t_method)fluid_sysex, gensym("sysex"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_info, gensym("info"), 0);
 }
+
+//  fluid_synth_system_reset(synth_); // panic
