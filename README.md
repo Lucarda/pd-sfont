@@ -70,9 +70,9 @@ and install the **ntldd** package:
 
 `pacman -S mingw32/mingw-w64-i686-ntldd-git`
 
-`pacman -S mingw64/mingw-w64-x86_64-ntldd-git` 
+`pacman -S mingw64/mingw-w64-x86_64-ntldd-git`
 
-Then `cd` MinGW to this repo and do: 
+Then `cd` MinGW to this repo and do:
 
 `make`
 
@@ -90,31 +90,27 @@ then do this command that fills dependencies on the installation dir:
 
 first build **fluidsynth**! Download sources from https://github.com/FluidSynth/fluidsynth/releases and get the following dependencies (shown for Debian)
 
-`sudo apt install cmake libglib2.0-dev pkgconf`
+`sudo apt install cmake libglib2.0-dev libsndfile1-dev patchelf`
 
+(patchelf is not needed for building fluidsynth, but for a later step)
 then `cd` to your fluidsynth sources dir an do:
 
 `````
 mkdir build
 cd build
-cmake ..
+cmake -Denable-libsndfile=on -Denable-jack=off -Denable-alsa=off -Denable-oss=off -Denable-pulseaudio=off -Denable-ladspa=off -Denable-aufile=off -Denable-network=off -Denable-ipv6=off -Denable-getopt=off -Denable-sdl2=off -Denable-threads=off ..
 sudo make install
 `````
 
-then `cd` to the sources of this repo and do
+then `cd` to the sources of this repo and do (change the pgklibdir path according to your needs):
 
-`make install`
+`make pkglibdir=$HOME/Pd/externals install`
 
-after that run the linuxdepXX.sh script that matches the architecture of your build. This script copies fluidsynth dependencies to your fluid~ external folder. Example for 64bit:
+Now you can copy all dependencies of `fluidsynth~.pd_linux` to the install path by running:
 
-`````
-cd <to/your/fluid~/installation/dir>
-chmod 775 linuxdep64.sh
-./linuxdep64.sh
-`````
+`make pkglibdir=$HOME/Pd/externals localdep_linux`
 
-Now the fluidsynth dependencies are copied to your fluid~ external folder.
-
+The result can be uploaded to Deken, since it runs also on systems where the fluidsynth library is not installed.
 
 
 --------------------------------------------------------------------------
