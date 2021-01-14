@@ -22,6 +22,7 @@ esac
 # becaue we think they will be installed on any system
 LD_EXCLUDE_LIST="linux-gate\.so.*
 linux-vdso\.so.*
+libarmmem.*\.so.*
 libc.so\.*
 ld-linux.*\.so.*
 libdl\.so.*
