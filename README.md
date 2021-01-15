@@ -78,11 +78,15 @@ Then `cd` MinGW to this repo and do:
 
 or you can also specify more options with:
 
-`make PDDIR=<path/to/pd directory> PDLIBDIR=<path/to/output>`
+`make PDDIR=<path/to/pd directory>`
 
-then do this command that fills dependencies on the installation dir:
+then do this command that installs and fills dependencies on the output dir:
 
-`make windep`
+`make localdep_windows`
+
+or with more options:
+
+`make localdep_windows PDLIBDIR=<path/you/want-the/output>`
 
 
 
