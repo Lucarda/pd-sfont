@@ -106,7 +106,7 @@ cmake -Denable-libsndfile=on -Denable-jack=off -Denable-alsa=off -Denable-oss=of
 sudo make install
 `````
 
-then `cd` to the sources of this repo and do (change the pgklibdir path according to your needs):
+Then `cd` to the sources of this repo and do (change `PDLIBDIR` according to your needs):
 
 `make PDLIBDIR=$HOME/Pd/externals install`
 
