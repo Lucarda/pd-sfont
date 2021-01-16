@@ -108,11 +108,11 @@ sudo make install
 
 then `cd` to the sources of this repo and do (change the pgklibdir path according to your needs):
 
-`make pkglibdir=$HOME/Pd/externals install`
+`make PDLIBDIR=$HOME/Pd/externals install`
 
 Now you can copy all dependencies of `fluidsynth~.pd_linux` to the install path by running:
 
-`make pkglibdir=$HOME/Pd/externals localdep_linux`
+`make PDLIBDIR=$HOME/Pd/externals localdep_linux`
 
 The result can be uploaded to Deken, since it runs also on systems where the fluidsynth library is not installed.
 
