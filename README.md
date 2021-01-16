@@ -105,6 +105,8 @@ cd build
 cmake -Denable-libsndfile=on -Denable-jack=off -Denable-alsa=off -Denable-oss=off -Denable-pulseaudio=off -Denable-ladspa=off -Denable-aufile=off -Denable-network=off -Denable-ipv6=off -Denable-getopt=off -Denable-sdl2=off -Denable-threads=off ..
 sudo make install
 `````
+**Note** for arch `amd64`: If you installed fluidsynth for the first time, it might be necessary to update your
+library paths by executing `sudo ldconfig /usr/local/lib64`.
 
 Then `cd` to the sources of this repo and do (change `PDLIBDIR` according to your needs):
 
