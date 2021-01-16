@@ -10,12 +10,6 @@ define forWindows
 
 endef
 
-define forLinux
-
-	datafiles += scripts/localdeps.linux.sh
-
-endef
-
 define forDarwin
 
 	datafiles += scripts/localdeps.macos.sh
@@ -32,4 +26,4 @@ localdep_windows: install
 	cd "${installpath}"; ./windep.sh fluidsynth~.dll
 
 localdep_linux: install
-	cd "${installpath}"; /bin/sh localdeps.linux.sh fluidsynth~.pd_linux
+	scripts/localdeps.linux.sh "${installpath}/fluidsynth~.pd_linux"
