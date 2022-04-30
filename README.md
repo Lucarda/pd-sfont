@@ -49,7 +49,7 @@ Download and install **FluidSynth** via homebrew (https://brew.sh/).
 
 - "brew install fluidsynth"
 
-After running the makefile, run the "localdeps.macos.sh" script with "fluid~.extension" as the argument. This magical script that copies the dynamic libraries into the external folder and links them correctly.
+After running the makefile, run the "localdeps.macos.sh" script with "fluidsynth~.extension" (example of extension: pd_darwin) as the argument. This magical script that copies the dynamic libraries into the external folder and links them correctly.
 
 
 
