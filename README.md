@@ -8,7 +8,7 @@
 
 [fluidsynth~] is an external for Pure Data that loads fluidsynth for a fullblown orchestra.
 
-**FluidSynth** is a Real-Time SoundFont Software Synthesizer (see https://www.fluidsynth.org and https://github.com/FluidSynth/fluidsynth). The latest at the time of writing is v 2.1.6!
+**FluidSynth** is a Real-Time SoundFont Software Synthesizer (see https://www.fluidsynth.org and https://github.com/FluidSynth/fluidsynth). The latest at the time of writing is v 2.2.7!
 
 This is a modification of https://github.com/porres/pd-fluid
 
