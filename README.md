@@ -10,10 +10,6 @@
 
 **FluidSynth** is a Real-Time SoundFont Software Synthesizer (see https://www.fluidsynth.org and https://github.com/FluidSynth/fluidsynth). The latest at the time of writing is v 2.2.7!
 
-This is a modification of https://github.com/porres/pd-fluid
-
-
-
 --------------------------------------------------------------------------
 
 ### Licence:
@@ -21,10 +17,9 @@ This is a modification of https://github.com/porres/pd-fluid
 Distributed under the GPLv2+, please check the LICENSE file for details.
 
 
-
 --------------------------------------------------------------------------
 
-#### Building [fluid~] for Pd Vanilla:
+#### Building [fluidsynth~] for Pd Vanilla:
 
 First you need to install  **FluidSynth** (https://www.fluidsynth.org/) in your system. You can run the makefile after that.
 
@@ -89,7 +84,6 @@ or with more options:
 `make localdep_windows PDLIBDIR=<path/you/want-the/output>`
 
 
-
 #### - Linux
 
 first build **fluidsynth**! Download sources from https://github.com/FluidSynth/fluidsynth/releases and get the following dependencies (shown for Debian)
@@ -118,14 +112,11 @@ Now you can copy all dependencies of `fluidsynth~.pd_linux` to the install path 
 
 The result can be uploaded to Deken, since it runs also on systems where the fluidsynth library is not installed.
 
-
 --------------------------------------------------------------------------
-
 
 ### Acknowledgements :
 
-Thanks to the **authors of fluidsynth** (https://github.com/FluidSynth/fluidsynth/blob/master/AUTHORS). Also thanks for those who worked on previous externals that loads fluid synth, such as **Larry Troxler**, author of the [iiwu~] external, which was the basis of the [fluid~] external by **Frank Barknecht** in [04/04/2003].  **Jonathan Wilkes** Ported [fluid~] from Flext/C++ to Pd's API using plain C/pdlibbuilder.  **Albert Gräf** expanded the functionality of the object to take more MIDI messages. More thanks to **IOhannes Zmölnig** for the magical script that copies the dynamic libraries into the external folder and links them correctly. Thanks to **Lucas Cordiviola** and **Roman Haefeli** for helping on how to build for windows/Linux and **others from the pd-list** that also helped.
-
+Thanks to the **authors of fluidsynth** (https://github.com/FluidSynth/fluidsynth/blob/master/AUTHORS). Also thanks for those who worked on previous externals for Pd that loads fluidsynth, such as **Larry Troxler**, author of the [iiwu~] external, which was the basis of the [fluid~] external by **Frank Barknecht** in [04/04/2003]. **Jonathan Wilkes** Ported [fluid~] from Flext/C++ to Pd's API using plain C/pdlibbuilder. **Albert Gräf** expanded the functionality of the object to take more MIDI messages. More thanks to **IOhannes Zmölnig** for the magical script that copies the dynamic libraries into the external folder and links them correctly. Thanks to **Lucas Cordiviola** and **Roman Haefeli** for helping on how to build for windows/Linux and **others from the pd-list** that also helped.
 
 --------------------------------------------------------------------------
 

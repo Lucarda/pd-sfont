@@ -1,3 +1,7 @@
+
+// This is a modification of https://github.com/porres/pd-fluid
+
+
 /*
 Copyright: Alexandre Torres Porres, based on the work of
  Frank Barknecht, Jonathan Wilkes and Albert Gräf
@@ -266,7 +270,7 @@ static void fluid_float(t_fluid_tilde *x, t_float f){
 static void fluid_load(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     s = NULL;
     if(x->x_synth == NULL){
-        pd_error(x, "[fluidsynth~]: no fluidsynth");
+        pd_error(x, "[fluidsynth~]: no fluidsynth instance created");
         return;
     }
     if(ac >= 1 && av->a_type == A_SYMBOL){
@@ -337,7 +341,7 @@ static void *fluid_tilde_new(t_symbol *s, int ac, t_atom *av){
         fluid_settings_setstr(x->x_settings, "synth.ladspa.active", "no");
         x->x_synth = new_fluid_synth(x->x_settings); // Create fluidsynth instance:
         if(x->x_synth == NULL){
-            pd_error(x, "[fluidsynth~]: couldn't create synth");
+            pd_error(x, "[fluidsynth~]: couldn't fluidsynth instance");
             goto end;
         }
         fluid_load(x, gensym("load"), ac, av); // try to load argument as soundfont
