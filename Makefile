@@ -4,26 +4,21 @@ class.sources = fluidsynth~.c
 
 ldlibs = -lfluidsynth
 
-define forWindows
-
-	datafiles += scripts/localdeps.win.sh scripts/windep.sh
-
-endef
-
-define forDarwin
-
-	datafiles += scripts/localdeps.macos.sh
-
-endef
-
-datafiles = fluidsynth~-help.pd LICENSE.txt README.md
+datafiles = fluidsynth~-help.pd fluidsynth~-meta.pd LICENSE.txt README.md
 datadirs = sf2
 
-include pd-lib-builder/Makefile.pdlibbuilder
+# This Makefile is based on the Makefile from pd-lib-builder written by
+# Katja Vetter. You can get it from:
+# https://github.com/pure-data/pd-lib-builder
 
-
-localdep_windows: install
-	cd "${installpath}"; ./windep.sh fluidsynth~.dll
+PDLIBBUILDER_DIR=pd-lib-builder/
+include $(firstword $(wildcard $(PDLIBBUILDER_DIR)/Makefile.pdlibbuilder Makefile.pdlibbuilder))
 
 localdep_linux: install
 	scripts/localdeps.linux.sh "${installpath}/fluidsynth~.pd_linux"
+
+localdep_windows: install
+	scripts/localdeps.win.sh "${installpath}/fluidsynth~.dll"
+
+localdep_macos: install
+	scripts/localdeps.macos.sh "${installpath}/fluidsynth~.${extension}"
