@@ -21,4 +21,4 @@ localdep_windows: install
 	scripts/localdeps.win.sh "${installpath}/fluidsynth~.dll"
 
 localdep_macos: install
-	scripts/localdeps.macos.sh "${installpath}/fluidsynth~.pd_darwin"
+	scripts/localdeps.macos.sh "${installpath}/fluidsynth~.${extension}"
