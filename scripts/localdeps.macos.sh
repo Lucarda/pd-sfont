@@ -109,9 +109,21 @@ done
 
 }
 
-
 for f in "${ARGS[@]}"; do
    if [ -e "${f}" ]; then
        install_deps "${f}"
    fi
 done
+
+# Code signing
+# On Monterey, binaries are automatically codesigned. Modifying them with this script renders the signature
+# invalid. When Pd loads an external with an invalid signature, it exits immediately. Thus, we need to make sure
+# that we codesign them again _after_ the localdeps process
+
+# This needs to be the absolutely last step. We don't do it while we're still inside a recursion.
+if ! $recursion; then
+  echo -n "Code signing in progress... "
+  codesign --remove-signature "${ARGS[@]}" ${outdir}/*.dylib
+  codesign -s -  "${ARGS[@]}" ${outdir}/*.dylib
+  echo "Done"
+fi
