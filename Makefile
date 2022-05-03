@@ -4,7 +4,7 @@ class.sources = fluidsynth~.c
 
 ldlibs = -lfluidsynth
 
-datafiles = fluidsynth~-help.pd LICENSE.txt README.md
+datafiles = fluidsynth~-help.pd fluidsynth~-meta.pd LICENSE.txt README.md
 datadirs = sf2
 
 # This Makefile is based on the Makefile from pd-lib-builder written by
