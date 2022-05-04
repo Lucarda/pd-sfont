@@ -67,9 +67,14 @@ static void fluid_tilde_free(t_fluid_tilde *x){
         delete_fluid_settings(x->x_settings);
 }
 
-static void fluid_version(void){
+static void fluid_print(void){
     post("[fluidsynth~] uses fluidsynth version: %s ", FLUIDSYNTH_VERSION);
     post("\n");
+}
+
+static void fluid_panic(t_fluid_tilde *x){
+    if(x->x_synth)
+        fluid_synth_system_reset(x->x_synth);
 }
 
 static void fluid_note(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
@@ -141,7 +146,7 @@ static void fluid_gen(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
         param = atom_getintarg(1, ac, av);
         value = atom_getfloatarg(2, ac, av);
         fluid_synth_set_gen(x->x_synth, chan-1, param, value);
-        // https://github.com/uliss/pure-data/blob/ceammc/ceammc/ext/src/misc/fluid.cpp#L390
+    //https:github.com/uliss/pure-data/blob/ceammc/ceammc/ext/src/misc/fluid.cpp#L542
     }
 }
 
@@ -353,7 +358,6 @@ void fluidsynth_tilde_setup(void){
     class_addmethod(fluid_tilde_class, (t_method)fluid_aftertouch, gensym("touch"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_pitch_bend, gensym("bend"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_sysex, gensym("sysex"), A_GIMME, 0);
-    class_addmethod(fluid_tilde_class, (t_method)fluid_version, gensym("version"), 0);
+    class_addmethod(fluid_tilde_class, (t_method)fluid_panic, gensym("panic"), 0);
+    class_addmethod(fluid_tilde_class, (t_method)fluid_print, gensym("version"), 0);
 }
-
-//  fluid_synth_system_reset(synth_); // panic

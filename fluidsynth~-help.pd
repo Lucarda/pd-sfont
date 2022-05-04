@@ -1,4 +1,4 @@
-#N canvas 396 56 561 555 10;
+#N canvas 396 56 561 568 10;
 #X obj 306 4 cnv 15 250 40 empty empty empty 12 13 0 18 #7c7c7c #e0e4dc
 0;
 #N canvas 382 141 749 319 (subpatch) 0;
@@ -27,28 +27,28 @@
 0;
 #X obj 2 280 cnv 3 550 3 empty \$0-pddp.cnv.inlets inlets 8 12 0 13
 #dcdcdc #000000 0;
-#X obj 2 451 cnv 3 550 3 empty \$0-pddp.cnv.outlets outlets 8 12 0
+#X obj 2 462 cnv 3 550 3 empty \$0-pddp.cnv.outlets outlets 8 12 0
 13 #dcdcdc #000000 0;
-#X obj 2 499 cnv 3 550 3 empty \$0-pddp.cnv.argument arguments 8 12
+#X obj 2 510 cnv 3 550 3 empty \$0-pddp.cnv.argument arguments 8 12
 0 13 #dcdcdc #000000 0;
-#X obj 85 286 cnv 17 3 160 empty \$0-pddp.cnv.let.0 0 5 9 0 16 #dcdcdc
+#X obj 85 286 cnv 17 3 170 empty \$0-pddp.cnv.let.0 0 5 9 0 16 #dcdcdc
 #9c9c9c 0;
-#X obj 100 458 cnv 17 3 17 empty \$0-pddp.cnv.let.n 0 5 9 0 16 #dcdcdc
+#X obj 100 469 cnv 17 3 17 empty \$0-pddp.cnv.let.n 0 5 9 0 16 #dcdcdc
 #9c9c9c 0;
-#X obj 100 478 cnv 17 3 17 empty \$0-pddp.cnv.let.r 1 5 9 0 16 #dcdcdc
+#X obj 100 489 cnv 17 3 17 empty \$0-pddp.cnv.let.r 1 5 9 0 16 #dcdcdc
 #9c9c9c 0;
-#X text 176 458 signal;
-#X text 176 477 signal;
-#X text 134 429 load <symbol> -;
-#X text 140 415 sysex <list> -;
-#X text 98 401 bank <float \, float> -;
-#X text 92 358 touch <float \, float> -;
-#X text 158 506 1) symbol;
-#X text 219 506 - soundfont file to load (default none);
-#X text 98 372 polytouch <f \, f \, f> -;
-#X text 232 429 loads soundfont file (.sf2/.sf3 extensions implied)
+#X text 176 469 signal;
+#X text 176 488 signal;
+#X text 134 299 load <symbol> -;
+#X text 140 429 sysex <list> -;
+#X text 98 415 bank <float \, float> -;
+#X text 92 372 touch <float \, float> -;
+#X text 158 517 1) symbol;
+#X text 219 517 - soundfont file to load (default none);
+#X text 98 386 polytouch <f \, f \, f> -;
+#X text 232 299 loads soundfont file (.sf2/.sf3 extensions implied)
 ;
-#X obj 4 525 cnv 15 552 21 empty empty empty 20 12 0 14 #e0e0e0 #202020
+#X obj 4 536 cnv 15 552 21 empty empty empty 20 12 0 14 #e0e0e0 #202020
 0;
 #X obj 235 219 else/out~;
 #N canvas 762 157 389 229 more 0;
@@ -71,10 +71,10 @@ are not familiar with it \, check <https://freepats.zenvoid.org/sf2/SF2_Intro.tx
 #X text 134 198 www.fluidsynth.org;
 #X connect 0 0 1 0;
 #X restore 462 249 pd more info;
-#X text 146 343 bend <f \, f> -;
-#X text 232 415 sets sysex messages, f 51;
-#X text 104 387 pgm <float \, float> -;
-#X text 134 329 ctl <f \, f \, f> -;
+#X text 146 357 bend <f \, f> -;
+#X text 232 429 sets sysex messages, f 51;
+#X text 104 401 pgm <float \, float> -;
+#X text 134 343 ctl <f \, f \, f> -;
 #N canvas 611 116 755 630 Input 0;
 #X floatatom 65 225 0 0 127 0 - - - 0;
 #X obj 34 395 outlet;
@@ -205,26 +205,25 @@ below:;
 #X connect 19 0 1 0;
 #X connect 20 0 19 0;
 #X restore 232 132 pd Input;
-#X text 232 401 bank number <bank \, channel (optional)>, f 51;
-#X text 232 387 program change <program \, channel (optional)>, f
+#X text 232 415 bank number <bank \, channel (optional)>, f 51;
+#X text 232 401 program change <program \, channel (optional)>, f
 51;
-#X text 232 329 control change <value \, control \, channel (optional)>
+#X text 232 343 control change <value \, control \, channel (optional)>
 ;
-#X text 232 300 note <key \, velocity \, channel (optional)>, f 51
+#X text 232 314 note <key \, velocity \, channel (optional)>, f 51
 ;
-#X text 232 343 bend <value \, channel (optional)>, f 51;
-#X text 232 358 channel aftertouch <value \, channel (optional)>,
+#X text 232 357 bend <value \, channel (optional)>, f 51;
+#X text 232 372 channel aftertouch <value \, channel (optional)>,
 f 51;
-#X text 232 372 key aftertouch <value \, key \, channel (optional)>
+#X text 232 386 key aftertouch <value \, key \, channel (optional)>
 , f 51;
-#X text 128 300 note <f \, f \, f> -;
-#X text 188 315 list -;
-#X text 232 315 same as "note" message, f 51;
+#X text 128 314 note <f \, f \, f> -;
+#X text 188 329 list -;
+#X text 232 329 same as "note" message, f 51;
 #X text 182 285 float -;
 #X text 232 285 raw MIDI input, f 51;
-#X text 219 457 - left output signal of stereo output, f 39;
-#X text 219 477 - right output signal of stereo output, f 39;
-#X obj 232 183 else/fluidsynth~ sf2/Famicom, f 16;
+#X text 219 468 - left output signal of stereo output, f 39;
+#X text 219 488 - right output signal of stereo output, f 39;
 #N canvas 873 74 493 229 load 0;
 #X msg 70 117 load \$1;
 #X obj 70 61 openpanel;
@@ -243,7 +242,12 @@ and ".sf3" extensions. This is the same for the argument., f 38;
 #X text 35 84 [fluidsynth~] is a sampler synthesizer that loads SoundFont
 files (.sf2/.sf3 extensions). It is based on the FluidSynth open source
 software synthesizer., f 76;
-#X connect 35 0 50 0;
-#X connect 50 0 29 0;
-#X connect 50 1 29 1;
-#X connect 51 0 50 0;
+#X text 182 443 panic -;
+#X text 232 443 resets synth and clears hanging notes, f 51;
+#X msg 182 145 panic;
+#X obj 232 183 else/fluidsynth~ sf2/Famicom, f 16;
+#X connect 35 0 55 0;
+#X connect 50 0 55 0;
+#X connect 54 0 55 0;
+#X connect 55 0 29 0;
+#X connect 55 1 29 1;
