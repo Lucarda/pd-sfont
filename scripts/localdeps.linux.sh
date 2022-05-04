@@ -95,7 +95,7 @@ make_local_copy_and_set_rpath() {
         else
             error "DEP: ${INSTALLDEPS_INDENT}  ${libpath} -> ${outdir}/"
             cp "${libpath}" "${outfile}"
-            patchelf --set-rpath \$ORIGIN/${arch} "${outfile}"
+            patchelf --set-rpath \$ORIGIN "${outfile}"
         fi
     done
     patchelf --set-rpath \$ORIGIN/${arch} "${1}"
