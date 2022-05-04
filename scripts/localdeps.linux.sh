@@ -29,6 +29,17 @@ libstdc++\.so.*
 libgcc_s\.so.*
 libpcre\.so.*"
 
+# detect arch
+arch=$(uname -m)
+case $arch in
+    x86_64)
+        arch=amd64
+        ;;
+    i686)
+        arch=i386
+        ;;
+esac
+
 error() {
     echo "$@" 1>&2
 }
@@ -63,7 +74,7 @@ make_local_copy_and_set_rpath() {
     # and set RUNPATH to $ORIGIN (exclude "standard" libraries)
     # arg1: binary to check
     local outdir
-    outdir=$(dirname "$1")
+    outdir="$(dirname "$1")/${arch}"
     if [ ! -d "${outdir}" ]; then
         outdir=.
     fi
@@ -82,7 +93,7 @@ make_local_copy_and_set_rpath() {
         else
             error "DEP: ${INSTALLDEPS_INDENT}  ${libpath} -> ${outdir}/"
             cp "${libpath}" "${outfile}"
-            patchelf --set-rpath \$ORIGIN "${outfile}"
+            patchelf --set-rpath \$ORIGIN/${arch} "${outfile}"
         fi
     done
     patchelf --set-rpath \$ORIGIN "${1}"
@@ -95,5 +106,7 @@ for binary_file in "$@"; do
         error "Skipping '${binary_file}'. Is it a binary file?"
         continue
     fi
+    depdir="$(dirname ${binary_file})/${arch}"
+    mkdir -p "${depdir}"
     make_local_copy_and_set_rpath $binary_file
 done
