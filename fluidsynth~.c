@@ -3,9 +3,8 @@
 
 
 /*
-Copyright: Alexandre Torres Porres, based on the work of
+Copyright: Alexandre Torres Porres, based on the work of Larry Troxler,
  Frank Barknecht, Jonathan Wilkes and Albert Gräf
- Distributed under the GPLv2+, please see LICENSE below.
 
 LICENSE:
 This program is free software; you can redistribute it and/or modify
@@ -68,9 +67,8 @@ static void fluid_tilde_free(t_fluid_tilde *x){
         delete_fluid_settings(x->x_settings);
 }
 
-static void fluid_info(void){
-    post(" - [fluidsynth~] uses fluidsynth version: %s ", FLUIDSYNTH_VERSION);
-    //            post("[fluidsynth~]: loaded soundfont %s", realname);
+static void fluid_version(void){
+    post("[fluidsynth~] uses fluidsynth version: %s ", FLUIDSYNTH_VERSION);
     post("\n");
 }
 
@@ -308,14 +306,6 @@ static void fluid_load(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     }
 }
 
-/*static void fluid_init(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
-    s = NULL;
-    if(x->x_synth)
-        delete_fluid_synth(x->x_synth);
-    if(x->x_settings)
-        delete_fluid_settings(x->x_settings);
-}*/
-
 static void *fluid_tilde_new(t_symbol *s, int ac, t_atom *av){
     s = NULL;
     t_fluid_tilde *x = (t_fluid_tilde *)pd_new(fluid_tilde_class);
@@ -327,10 +317,8 @@ static void *fluid_tilde_new(t_symbol *s, int ac, t_atom *av){
     x->x_out_right = outlet_new(&x->x_obj, &s_signal);
     x->x_canvas = canvas_getcurrent();
     x->x_settings = new_fluid_settings();
-    if(x->x_settings == NULL){
+    if(x->x_settings == NULL)
         pd_error(x, "[fluidsynth~]: couldn't create synth settings\n");
-        goto end;
-    }
     else{ // load settings:
         fluid_settings_setnum(x->x_settings, "synth.midi-channels", 16);
         fluid_settings_setnum(x->x_settings, "synth.polyphony", 256);
@@ -342,11 +330,10 @@ static void *fluid_tilde_new(t_symbol *s, int ac, t_atom *av){
         x->x_synth = new_fluid_synth(x->x_settings); // Create fluidsynth instance:
         if(x->x_synth == NULL){
             pd_error(x, "[fluidsynth~]: couldn't fluidsynth instance");
-            goto end;
+            return(void *)x;
         }
         fluid_load(x, gensym("load"), ac, av); // try to load argument as soundfont
     }
-end:
     return(void *)x;
 }
  
@@ -366,7 +353,7 @@ void fluidsynth_tilde_setup(void){
     class_addmethod(fluid_tilde_class, (t_method)fluid_aftertouch, gensym("touch"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_pitch_bend, gensym("bend"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_sysex, gensym("sysex"), A_GIMME, 0);
-    class_addmethod(fluid_tilde_class, (t_method)fluid_info, gensym("info"), 0);
+    class_addmethod(fluid_tilde_class, (t_method)fluid_version, gensym("version"), 0);
 }
 
 //  fluid_synth_system_reset(synth_); // panic
