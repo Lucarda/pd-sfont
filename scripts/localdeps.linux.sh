@@ -98,7 +98,7 @@ make_local_copy_and_set_rpath() {
             patchelf --set-rpath \$ORIGIN/${arch} "${outfile}"
         fi
     done
-    patchelf --set-rpath \$ORIGIN "${1}"
+    patchelf --set-rpath \$ORIGIN/${arch} "${1}"
 }
 
 
