@@ -38,6 +38,8 @@ case $arch in
     i686)
         arch=i386
         ;;
+    armv7l)
+	arch=arm
 esac
 
 error() {
