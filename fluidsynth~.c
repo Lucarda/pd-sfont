@@ -77,6 +77,25 @@ static void fluid_panic(t_fluid_tilde *x){
         fluid_synth_system_reset(x->x_synth);
 }
 
+static void fluid_transp(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
+    s = NULL;
+    if(x->x_synth == NULL || ac < 2 || ac > 3)
+        return;
+    float cents = atom_getfloatarg(0, ac, av);
+    int ch = ac == ? atom_getintarg(1, ac, av) : 0;
+    fluid_synth_set_gen(x->x_synth, ch, GEN_FINETUNE, cents);
+}
+
+static void fluid_pan(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
+    s = NULL;
+    if(x->x_synth == NULL)
+        return;
+    float f1 = atom_getfloatarg(0, ac, av);
+    int ch = atom_getintarg(1, ac, av);
+    float pan = f1 < -1 ? -1 : f1 > 1 ? 1 : f1;
+    fluid_synth_set_gen(x->x_synth, ch, GEN_PAN, pan*500);
+}
+
 static void fluid_note(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     s = NULL;
     if(x->x_synth == NULL)
@@ -139,14 +158,17 @@ static void fluid_gen(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     s = NULL;
     if(x->x_synth == NULL)
         return;
-    if(ac == 3){
-        int chan, param;
-        float value;
-        chan = atom_getintarg(0, ac, av);
-        param = atom_getintarg(1, ac, av);
-        value = atom_getfloatarg(2, ac, av);
+    if(ac == 2){
+        int param = atom_getintarg(1, ac, av);
+        float value = atom_getfloatarg(2, ac, av);
+        fluid_synth_set_gen(x->x_synth, 0, param, value);
+    }
+    else if(ac == 3){
+        int chan = atom_getintarg(0, ac, av);
+        float param = atom_getintarg(1, ac, av);
+        float value = atom_getfloatarg(2, ac, av);
         fluid_synth_set_gen(x->x_synth, chan-1, param, value);
-    //https:github.com/uliss/pure-data/blob/ceammc/ceammc/ext/src/misc/fluid.cpp#L542
+    // https://github.com/uliss/pure-data/blob/ceammc/ceammc/ext/src/misc/fluid.cpp
     }
 }
 
@@ -359,5 +381,7 @@ void fluidsynth_tilde_setup(void){
     class_addmethod(fluid_tilde_class, (t_method)fluid_pitch_bend, gensym("bend"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_sysex, gensym("sysex"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_panic, gensym("panic"), 0);
+    class_addmethod(fluid_tilde_class, (t_method)fluid_transp, gensym("transp"), A_GIMME, 0);
+    class_addmethod(fluid_tilde_class, (t_method)fluid_pan, gensym("pan"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_print, gensym("version"), 0);
 }
