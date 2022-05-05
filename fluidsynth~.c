@@ -1,7 +1,6 @@
 
 // This is a modification of https://github.com/porres/pd-fluid
 
-
 /*
 Copyright: Alexandre Torres Porres, based on the work of Larry Troxler,
  Frank Barknecht, Jonathan Wilkes and Albert Gräf
@@ -79,10 +78,10 @@ static void fluid_panic(t_fluid_tilde *x){
 
 static void fluid_transp(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
     s = NULL;
-    if(x->x_synth == NULL || ac < 2 || ac > 3)
+    if(x->x_synth == NULL || ac < 1 || ac > 2)
         return;
     float cents = atom_getfloatarg(0, ac, av);
-    int ch = ac == ? atom_getintarg(1, ac, av) : 0;
+    int ch = ac == 2 ? atom_getintarg(1, ac, av) : 0;
     fluid_synth_set_gen(x->x_synth, ch, GEN_FINETUNE, cents);
 }
 
@@ -170,6 +169,43 @@ static void fluid_gen(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
         fluid_synth_set_gen(x->x_synth, chan-1, param, value);
     // https://github.com/uliss/pure-data/blob/ceammc/ceammc/ext/src/misc/fluid.cpp
     }
+}
+
+static void fluid_remap(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
+    s = NULL;
+    if(x->x_synth == NULL)
+        return;
+    if(ac == 128){
+        double pitches[128];
+        for(int i = 0; i < 128; i++)
+            pitches[i] = atom_getfloatarg(i, ac, av);
+        int ch = 0;
+        int tune_bank = 1;
+        int tune_prog = 1;
+        fluid_synth_activate_key_tuning(x->x_synth, tune_bank, tune_prog, "custom-tuning", pitches, 1);
+        fluid_synth_activate_tuning(x->x_synth, ch, tune_bank, tune_prog, 1);
+    }
+    else
+        post("wrong size");
+}
+
+static void fluid_scale(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
+    s = NULL;
+    if(x->x_synth == NULL)
+        return;
+    if(ac == 12){
+        double pitches[12];
+        for(int i = 0; i < 12; i++)
+            pitches[i] = atom_getfloatarg(i, ac, av);
+        int tune_bank = 1;
+        int tune_prog = 1;
+        t_symbol* name = gensym("custom tuning");
+        int rc = fluid_synth_activate_key_tuning(x->x_synth, tune_bank, tune_prog, name->s_name, pitches, 1);
+        if(rc == FLUID_OK)
+            post("FLUID_OK");
+    }
+    else
+        post("wrong size");
 }
 
 static void fluid_aftertouch(t_fluid_tilde *x, t_symbol *s, int ac, t_atom *av){
@@ -383,5 +419,7 @@ void fluidsynth_tilde_setup(void){
     class_addmethod(fluid_tilde_class, (t_method)fluid_panic, gensym("panic"), 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_transp, gensym("transp"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_pan, gensym("pan"), A_GIMME, 0);
+    class_addmethod(fluid_tilde_class, (t_method)fluid_remap, gensym("remap"), A_GIMME, 0);
+    class_addmethod(fluid_tilde_class, (t_method)fluid_scale, gensym("scale"), A_GIMME, 0);
     class_addmethod(fluid_tilde_class, (t_method)fluid_print, gensym("version"), 0);
 }
