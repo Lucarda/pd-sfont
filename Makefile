@@ -13,10 +13,10 @@ PDLIBBUILDER_DIR=pd-lib-builder/
 include $(firstword $(wildcard $(PDLIBBUILDER_DIR)/Makefile.pdlibbuilder Makefile.pdlibbuilder))
 
 localdep_linux: install
-	scripts/localdeps.linux.sh "${installpath}/fluidsynth~.${extension}"
+	scripts/localdeps.linux.sh "${installpath}/sfont~.${extension}"
 
 localdep_windows: install
-	scripts/localdeps.win.sh "${installpath}/fluidsynth~.dll"
+	scripts/localdeps.win.sh "${installpath}/sfont~.${extension}"
 
 localdep_macos: install
-	scripts/localdeps.macos.sh "${installpath}/fluidsynth~.${extension}"
+	scripts/localdeps.macos.sh "${installpath}/sfont~.${extension}"

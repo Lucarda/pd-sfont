@@ -35,6 +35,8 @@ list_deps() {
 	| sed -e 's|\\|/|g'
 }
 
+
+
 file2arch() {
   if file "$1" | grep -w "PE32+" >/dev/null; then
     echo "w64"
@@ -53,6 +55,8 @@ local odepfile
 local archext
 local dep
 error "DEP: ${INSTALLDEPS_INDENT}'$1' '$2'"
+
+
 
 outdir=$2
 if [ "x${outdir}" = "x" ]; then
@@ -75,20 +79,22 @@ list_deps "$1" | while read dep; do
   if [ -e "${outdir}/${odepfile}" ]; then
     error "DEP: ${INSTALLDEPS_INDENT}  ${dep} SKIPPED"
   else
-    error "DEP: ${INSTALLDEPS_INDENT}  ${dep} -> ${outdir}/${odepfile}"
-    cp "${dep}" "${outdir}/${odepfile}"
+    error "DEP: ${INSTALLDEPS_INDENT}  ${dep} -> ${outdir}/${nicepath}/${odepfile}"
+    cp "${dep}" "${outdir}/${nicepath}/${odepfile}"
     chmod a-x "${outdir}/${depfile}"
   fi
 
   if [ "x${archext}" != "x" ]; then
-    sed -b -e "s|${idepfile}|${odepfile}|g" -i "${outdir}/${odepfile}" "${outdir}"/*."${archext}" "$1"
+    sed -b -e "s|${idepfile}|${odepfile}|g" -i "${outdir}/${nicepath}/${odepfile}" "${outdir}/${nicepath}"/*."${archext}" "$1"
   fi
 done
 }
 
+nicepath="sf/win_deps"
 
 for f in "$@"; do
    if [ -e "${f}" ]; then
+       mkdir -p "${1%/*}/${nicepath}"
        install_deps "${f}"
    fi
 done
