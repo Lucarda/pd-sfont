@@ -1,18 +1,14 @@
 * * *
 
-**[fluidsynth~] - A soundfont player for Pure Data that uses fluidsynth.**
+**[sfont~] - A soundfont player for Pure Data based on FluidSynth.**
 
 * * *
 
 ### About:
 
-[fluidsynth~] is an external for Pure Data that loads fluidsynth for a fullblown orchestra.
+[sfont~] is an external for Pure Data that loads soundfont files for a fullblown orchestra. It is based on the FluidSynth open source project, a Real-Time SoundFont Software Synthesizer (see https://www.fluidsynth.org and https://github.com/FluidSynth/fluidsynth). At this version, sfont~ uses FluidSynth 2.2.7!
 
-**FluidSynth** is a Real-Time SoundFont Software Synthesizer (see https://www.fluidsynth.org and https://github.com/FluidSynth/fluidsynth). The latest at the time of writing is v 2.2.7!
-
-This is a modification of https://github.com/porres/pd-fluid
-
-Copyright: Alexandre Torres Porres, based on the work of Larry Troxler, Frank Barknecht, Jonathan Wilkes and Albert Gräf
+Copyright: Alexandre Torres Porres and others
 
 --------------------------------------------------------------------------
 
@@ -23,7 +19,7 @@ Distributed under the GPLv2+, please check the LICENSE file for details.
 
 --------------------------------------------------------------------------
 
-#### Building [fluidsynth~] for Pd Vanilla:
+#### Building [sfont~] for Pd Vanilla:
 
 First you need to install  **FluidSynth** (https://www.fluidsynth.org/) in your system. You can run the makefile after that.
 
@@ -120,8 +116,8 @@ The result can be uploaded to Deken, since it runs also on systems where the flu
 
 ### Acknowledgements :
 
-Thanks to the **authors of fluidsynth** (https://github.com/FluidSynth/fluidsynth/blob/master/AUTHORS). Also thanks for those who worked on previous externals for Pd that loads fluidsynth, such as **Larry Troxler**, author of the [iiwu~] external, which was the basis of the [fluid~] external by **Frank Barknecht** in [04/04/2003]. **Jonathan Wilkes** Ported [fluid~] from Flext/C++ to Pd's API using plain C/pdlibbuilder. **Albert Gräf** expanded the functionality of the object to take more MIDI messages. More thanks to **IOhannes Zmölnig** for the magical script that copies the dynamic libraries into the external folder and links them correctly. Thanks to **Lucas Cordiviola** and **Roman Haefeli** for helping on how to build for windows/Linux and **others from the pd-list** that also helped.
+Thanks to the **authors of fluidsynth** (https://github.com/FluidSynth/fluidsynth/blob/master/AUTHORS). Also thanks for those who worked on previous externals for Pd that loads fluidsynth, such as **Larry Troxler**, author of the [iiwu~] external, which was the basis of the [fluid~] external by **Frank Barknecht** in [04/04/2003]. **Jonathan Wilkes** Ported [fluid~] from Flext/C++ to Pd's API using plain C/pdlibbuilder. **Albert Gräf** expanded the functionality of the object to take more MIDI messages. The ceammc developers also have an external named [fluid~] that is not related to the one first created by Barknecht. Both [fluid~] objects were used as inspiration for this [sfont~] external. 
 
---------------------------------------------------------------------------
+Special thanks to **IOhannes Zmölnig** for the magical script that copies the dynamic libraries into the external folder and links them correctly. Thanks to **Lucas Cordiviola** and **Roman Haefeli** for helping on how to build for windows/Linux and **others from the pd-list** that also helped.
 
-c
+-------------------------------------------------------------------------
