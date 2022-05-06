@@ -1,10 +1,10 @@
-lib.name = fluidsynth~
+lib.name = sfont~
 
-class.sources = fluidsynth~.c
+class.sources = sfont~.c
 
 ldlibs = -lfluidsynth
 
-datafiles = fluidsynth~-help.pd fluidsynth~-meta.pd LICENSE.txt README.md
+datafiles = sfont~-help.pd sfont~-meta.pd LICENSE.txt README.md
 datadirs = sf2
 
 # This Makefile is based on the Makefile from pd-lib-builder written by
