@@ -27,6 +27,8 @@ Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 static t_class *sfont_class;
  
+static int printed;
+
 typedef struct _sfont{
     t_object            x_obj;
     fluid_synth_t      *x_synth;
@@ -35,7 +37,9 @@ typedef struct _sfont{
     t_outlet           *x_out_left;
     t_outlet           *x_out_right;
     t_canvas           *x_canvas;
+    t_symbol           *x_sfname;
     int                 x_sysex;
+    int                 x_verbosity;
     int                 x_count;
     int                 x_ready;
     int                 x_id;
@@ -60,16 +64,12 @@ static void sfont_dsp(t_sfont *x, t_signal **sp){
     dsp_add(sfont_perform, 4, x, sp[0]->s_vec, sp[1]->s_vec, (t_int)sp[0]->s_n);
 }
 
-static void sfont_free(t_sfont *x){
-    if(x->x_synth)
-        delete_fluid_synth(x->x_synth);
-    if(x->x_settings)
-        delete_fluid_settings(x->x_settings);
+static void fluid_getversion(void){
+    post("[sfont~] from ELSE, version 0.1-alpha (using fluidsynth version: %s)", FLUIDSYNTH_VERSION);
 }
 
-static void fluid_vesrion(void){
-    post("[sfont~] uses fluidsynth version: %s ", FLUIDSYNTH_VERSION);
-    post("\n");
+static void fluid_verbose(t_sfont *x, t_floatarg f){
+    x->x_verbosity = f != 0;
 }
 
 static void fluid_panic(t_sfont *x){
@@ -115,18 +115,21 @@ static void fluid_program_change(t_sfont *x, t_symbol *s, int ac, t_atom *av){
     if(ac == 1 || ac == 2){
         int pgm = atom_getintarg(0, ac, av);
         x->x_pgm = pgm < 0 ? 0 : pgm > 127 ? 127 : pgm;
-        int chan = ac > 1 ? atom_getintarg(1, ac, av) : 1;
-        int fail = fluid_synth_program_change(x->x_synth, chan-1, x->x_pgm);
+        int ch = ac > 1 ? atom_getintarg(1, ac, av) - 1: 0;
+        int fail = fluid_synth_program_change(x->x_synth, ch, x->x_pgm);
         if(!fail){
             fluid_preset_t* preset = fluid_sfont_get_preset(x->x_sfont, x->x_bank, x->x_pgm);
-            if(preset == NULL)
-                post("[sfont~]: couldn't load progam %d in bank %d", x->x_pgm, x->x_bank);
-            else{
-                const char* name = fluid_preset_get_name(preset);
-                post("[sfont~]: loaded preset \"%s\" from bank (%d) / pgm (%d)", name, x->x_bank,  x->x_pgm);
+            if(x->x_verbosity){
+                if(preset == NULL)
+                    post("[sfont~]: couldn't load progam %d in bank %d", x->x_pgm, x->x_bank);
+                else{
+                    const char* name = fluid_preset_get_name(preset);
+                    post("[sfont~]: loaded \"%s\" (bank %d, pgm %d) in channel %d",
+                         name, x->x_bank, x->x_pgm, ch);
+                }
             }
         }
-        else
+        else 
             post("[sfont~]: couldn't load progam %d in bank %d", x->x_pgm, x->x_bank);
     }
 }
@@ -148,17 +151,17 @@ static void fluid_bank(t_sfont *x, t_symbol *s, int ac, t_atom *av){
                 post("[sfont~]: couldn't load progam %d in bank %d", x->x_pgm, x->x_bank);
             else{
                 fluid_synth_program_reset(x->x_synth);
-                const char* name = fluid_preset_get_name(preset);
-                if(1) // verbose
-                    post("[sfont~]: \"%s\" from bank %d / pgm %d loaded in channel %d",
-                         name, x->x_bank,  x->x_pgm, ch);
+                if(x->x_verbosity){
+                    const char* name = fluid_preset_get_name(preset);
+                    post("[sfont~]: loaded \"%s\" (bank %d, pgm %d) in channel %d",
+                         name, x->x_bank, x->x_pgm, ch);
+                }
             }
         }
         else
             post("[sfont~]: couldn't load bank %d", bank);
     }
 }
-
 
 static void fluid_control_change(t_sfont *x, t_symbol *s, int ac, t_atom *av){
     s = NULL;
@@ -356,8 +359,12 @@ static void fluid_float(t_sfont *x, t_float f){ // raw midi input
         x->x_type = x->x_ready = 0; // clear
 }
 
-static void fluid_print(t_sfont *x){
-    post("\n");
+static void fluid_info(t_sfont *x){
+    if(x->x_sfname == NULL){
+        post("[sfont~]: no soundfont loaded, nothing to info");
+        return;
+    }
+    post("loaded soundfont name = %s", x->x_sfname->s_name);
     post("--- bank number / program number / preset name ---");
     for(int bank = 0; bank < 16384; bank++){
         for(int num = 0; num < 128; num++){
@@ -402,17 +409,26 @@ static void fluid_load(t_sfont *x, t_symbol *s, int ac, t_atom *av){
                 }
             }
         }
-        // Save the current working directory.
-        char buf[MAXPDSTRING], *cwd = getcwd(buf, MAXPDSTRING);
-        sys_close(fd);
+        sys_close(fd); // ???
         chdir(realdir);
         int id = fluid_synth_sfload(x->x_synth, realname, 0);
         if(id >= 0){
             fluid_synth_program_reset(x->x_synth);
             x->x_sfont = fluid_synth_get_sfont_by_id(x->x_synth, id);
+            x->x_sfname = atom_getsymbolarg(0, ac, av);
+            if(x->x_verbosity)
+                fluid_info(x);
         }
-        cwd && chdir(cwd); // Restore the working directory.
+        else
+            post("[sfont~]: couldn't load %d", realname);
     }
+}
+
+static void sfont_free(t_sfont *x){
+    if(x->x_synth)
+        delete_fluid_synth(x->x_synth);
+    if(x->x_settings)
+        delete_fluid_settings(x->x_settings);
 }
 
 static void *sfont_new(t_symbol *s, int ac, t_atom *av){
@@ -420,14 +436,17 @@ static void *sfont_new(t_symbol *s, int ac, t_atom *av){
     t_sfont *x = (t_sfont *)pd_new(sfont_class);
     x->x_synth = NULL;
     x->x_settings = NULL;
+    x->x_sfname = NULL;
     x->x_sysex = x->x_ready = x->x_count = 0;
     x->x_data = x->x_channel = x->x_type = 0;
     x->x_out_left = outlet_new(&x->x_obj, &s_signal);
     x->x_out_right = outlet_new(&x->x_obj, &s_signal);
     x->x_canvas = canvas_getcurrent();
     x->x_settings = new_fluid_settings();
-    if(x->x_settings == NULL)
+    if(x->x_settings == NULL){
         pd_error(x, "[sfont~]: couldn't create synth settings\n");
+        return(NULL);
+    }
     else{ // load settings:
         fluid_settings_setnum(x->x_settings, "synth.midi-channels", 16);
         fluid_settings_setnum(x->x_settings, "synth.polyphony", 256);
@@ -439,11 +458,22 @@ static void *sfont_new(t_symbol *s, int ac, t_atom *av){
         x->x_synth = new_fluid_synth(x->x_settings); // Create fluidsynth instance:
         if(x->x_synth == NULL){
             pd_error(x, "[sfont~]: couldn't create fluidsynth instance");
-            return(void *)x;
+            return(NULL);
         }
-        fluid_load(x, gensym("load"), ac, av); // try to load argument as soundfont
+        if(ac){
+            if(av->a_type == A_FLOAT){
+                x->x_verbosity = atom_getfloatarg(0, ac, av) != 0;
+                ac--, av++;
+                if(x->x_verbosity && !printed){
+                    fluid_getversion();
+                    printed = 1;
+                }
+            }
+            if(ac && av->a_type == A_SYMBOL)
+                fluid_load(x, gensym("load"), ac, av); // try to load soundfont
+        }
     }
-    return(void *)x;
+    return(x);
 }
  
 void sfont_tilde_setup(void){
@@ -468,9 +498,10 @@ void sfont_tilde_setup(void){
 //    class_addmethod(sfont_class, (t_method)fluid_remap, gensym("remap"), A_GIMME, 0);
 //    class_addmethod(sfont_class, (t_method)fluid_scale, gensym("scale"), A_GIMME, 0);
 //    class_addmethod(sfont_class, (t_method)fluid_a4, gensym("a4"), A_FLOAT, 0);
-    class_addmethod(sfont_class, (t_method)fluid_vesrion, gensym("version"), 0);
-    class_addmethod(sfont_class, (t_method)fluid_print, gensym("print"), 0);
+    class_addmethod(sfont_class, (t_method)fluid_getversion, gensym("version"), 0);
+    class_addmethod(sfont_class, (t_method)fluid_verbose, gensym("verbose"), A_FLOAT, 0);
+    class_addmethod(sfont_class, (t_method)fluid_info, gensym("info"), 0);
 }
 
-// stealing ides from:
+// let's steal ideas from:
 // https://github.com/uliss/pure-data/blob/ceammc/ceammc/ext/src/misc/fluid.cpp

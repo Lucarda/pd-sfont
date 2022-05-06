@@ -7,9 +7,7 @@ ldlibs = -lfluidsynth
 datafiles = sfont~-help.pd sfont~-meta.pd LICENSE.txt README.md
 datadirs = sf
 
-# This Makefile is based on the Makefile from pd-lib-builder written by
-# Katja Vetter. You can get it from:
-# https://github.com/pure-data/pd-lib-builder
+# Makefile based on pd-lib-builder by Katja Vetter, see: https://github.com/pure-data/pd-lib-builder
 
 PDLIBBUILDER_DIR=pd-lib-builder/
 include $(firstword $(wildcard $(PDLIBBUILDER_DIR)/Makefile.pdlibbuilder Makefile.pdlibbuilder))

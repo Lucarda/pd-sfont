@@ -156,7 +156,7 @@ cents;
 #X obj 70 154 outlet;
 #X text 215 78 If no extension is given \, it searches for both ".sf2"
 and ".sf3" extensions. This is the same for the argument., f 38;
-#X msg 89 86 symbol sf2/Theremin;
+#X msg 89 86 symbol sf/Theremin;
 #X connect 0 0 4 0;
 #X connect 1 0 0 0;
 #X connect 2 0 1 0;
@@ -164,7 +164,7 @@ and ".sf3" extensions. This is the same for the argument., f 38;
 #X restore 196 188 pd load;
 #X text 248 188 <-- load files;
 #X text 57 140 set MIDI input at preferences, f 11;
-#N canvas 429 129 937 473 basic 0;
+#N canvas 257 112 937 473 basic 0;
 #X obj 114 17 else/keyboard 17 80 4 3 0 0 empty empty;
 #X obj 189 154 + 1;
 #X obj 189 131 hradio 15 1 0 4 empty empty empty 0 -8 0 10 #dfdfdf
@@ -172,7 +172,7 @@ and ".sf3" extensions. This is the same for the argument., f 38;
 #X floatatom 189 176 4 1 4 0 - - - 0;
 #X obj 114 199 list append 1;
 #X listbox 114 164 8 0 0 0 - - - 12;
-#X listbox 114 231 8 0 0 0 - - - 16;
+#X listbox 114 223 9 0 0 0 - - - 16;
 #X obj 232 261 else/pack2 pgm f 1;
 #X floatatom 284 235 4 0 127 0 - - - 0;
 #X obj 284 147 vradio 15 1 0 5 empty empty empty 0 -8 0 10 #dfdfdf
@@ -182,22 +182,16 @@ and ".sf3" extensions. This is the same for the argument., f 38;
 #000000 #000000 0;
 #X obj 337 214 + 1;
 #X obj 232 291 else/display;
-#X obj 633 102 else/openfile -h https://freepats.zenvoid.org/sf2/SF2_Intro.txt
+#X obj 632 81 else/openfile -h https://freepats.zenvoid.org/sf2/SF2_Intro.txt
 ;
-#X text 619 43 SoundFont is a file format for sample-based instrument
+#X text 618 22 SoundFont is a file format for sample-based instrument
 sounds. If you are not familiar with it \, check:, f 44;
 #X obj 267 392 else/out~;
-#X text 573 192 This subpatch shows basic input messages for playing
-and setting bank and program sounds. You can use either yhe 'note'
-or list messages to play MIDI notes and the arguments are: MIDI Pitch
-\, Velocity and optionally you can set a channel number (counting from
-1). If no channel number is given \, then a default channel 1 is used.
-, f 55;
-#X obj 633 85 else/openfile -h https://en.wikipedia.org/wiki/SoundFont
+#X obj 632 64 else/openfile -h https://en.wikipedia.org/wiki/SoundFont
 ;
-#X obj 748 159 else/openfile -h https://musescore.org/en/handbook/soundfonts-and-sfz-files#list
+#X obj 747 138 else/openfile -h https://musescore.org/en/handbook/soundfonts-and-sfz-files#list
 MuseScore's site;
-#X text 627 139 Download some Soundfonts from:;
+#X text 626 118 Download some Soundfonts from:;
 #X text 273 115 program number, f 8;
 #X floatatom 419 240 4 0 1000 0 - - - 0;
 #X obj 419 152 vradio 15 1 0 5 empty empty empty 0 -8 0 10 #dfdfdf
@@ -209,52 +203,70 @@ MuseScore's site;
 #X obj 364 296 else/display;
 #X text 408 123 bank number, f 6;
 #X obj 364 266 else/pack2 bank f 1;
-#X text 494 295 Some files - like the "waves.sf2" file used here -
+#X text 467 304 Some files - like the "waves.sf2" file used here -
 include different bank numbers with different programs each. Usually
 \, a different program means a different sound wave \, as is the case
 here. Set the program number with the 'pgm' message. You can optionally
 set a channel to load the program into a specific channel (by default
 it loads on channel 1). You can then load different programs into different
 channels and use the note and other MIDI messages to access them.,
-f 70;
+f 74;
 #X text 334 129 channel;
 #X text 472 135 channel;
-#X text 494 393 In a similar way you can choose a different bank of
-programs into a channel (if no channel is given \, channel 1 is used).
-Setting the bank number loads the previously set program number of
-the new bank \, but you can set a different program number right next
-if you use the 'pgm' message of course., f 70;
 #X text 190 111 channel;
-#X text 34 236 note: -----> MIDI Pitch \; Velocity \; Channel, f 12
-;
 #X text 28 25 shift + click;
 #X text 10 44 to hold keys -->;
-#X msg 131 313 print;
-#X obj 232 352 ./sfont~ sf/waves, f 29;
+#X msg 124 305 info;
+#X obj 42 280 tgl 17 0 empty empty empty 17 7 0 10 #dfdfdf #000000
+#000000 0 1;
+#X msg 42 305 verbose \$1;
+#X text 467 390 Similarly \, you can choose a different bank of programs
+into a channel (if no channel is given \, channel 1 is used). Setting
+the bank number loads the previously set program number of the new
+bank \, but you can set a different program number right next if you
+use the 'pgm' message of course., f 74;
+#X text 50 218 Pitch \; Velocity \; Channel;
+#X msg 167 261 version;
+#X text 527 161 This subpatch shows basic input messages for playing
+and setting bank and program sounds. You can use either yhe 'note'
+or list messages to play MIDI notes and the arguments are: MIDI Pitch
+\, Velocity and optionally you can set a channel number (counting from
+1). If no channel number is given \, then a default channel 1 is used.
+If the optional verbosity first argument is given \, the terminal window
+prints the 'version' (same as "version" message). It also loads the
+soundfont name and its banks \, programs and preset names \, which
+is also given by the "info" message. Finally in verbosity mode \, terminal
+window prints bank \, program and preset name when you load a program
+or if it fails. Verbosity is also set by the "verbose" message., f
+65;
+#X obj 232 352 ./sfont~ 1 sf/waves.sf2, f 29;
 #X connect 0 0 5 0;
 #X connect 1 0 3 0;
 #X connect 2 0 1 0;
 #X connect 3 0 4 1;
 #X connect 4 0 6 0;
 #X connect 5 0 4 0;
-#X connect 6 0 39 0;
+#X connect 6 0 42 0;
 #X connect 7 0 13 0;
 #X connect 8 0 7 1;
 #X connect 9 0 8 0;
 #X connect 10 0 7 2;
 #X connect 11 0 12 0;
 #X connect 12 0 10 0;
-#X connect 13 0 39 0;
-#X connect 22 0 29 1;
-#X connect 23 0 22 0;
-#X connect 24 0 29 2;
-#X connect 25 0 26 0;
-#X connect 26 0 24 0;
-#X connect 27 0 39 0;
-#X connect 29 0 27 0;
-#X connect 38 0 39 0;
-#X connect 39 0 16 0;
-#X connect 39 1 16 1;
+#X connect 13 0 42 0;
+#X connect 21 0 28 1;
+#X connect 22 0 21 0;
+#X connect 23 0 28 2;
+#X connect 24 0 25 0;
+#X connect 25 0 23 0;
+#X connect 26 0 42 0;
+#X connect 28 0 26 0;
+#X connect 35 0 42 0;
+#X connect 36 0 37 0;
+#X connect 37 0 42 0;
+#X connect 40 0 42 0;
+#X connect 42 0 16 0;
+#X connect 42 1 16 1;
 #X restore 472 182 pd basic;
 #N canvas 597 74 666 434 MIDI-in 0;
 #N canvas 964 117 329 629 MIDI-input 0;
