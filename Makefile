@@ -5,7 +5,7 @@ class.sources = sfont~.c
 ldlibs = -lfluidsynth
 
 datafiles = sfont~-help.pd sfont~-meta.pd LICENSE.txt README.md
-datadirs = sf2
+datadirs = sf
 
 # This Makefile is based on the Makefile from pd-lib-builder written by
 # Katja Vetter. You can get it from:
