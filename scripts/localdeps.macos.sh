@@ -8,6 +8,7 @@
 #default exclude/include paths
 exclude_paths="/usr/lib/*:/System/Library/Frameworks/*"
 include_paths="/*"
+recursion=false
 
 # UTILITIES
 if [ -e "${0%/*}/localdeps.utilities.source" ]; then
@@ -149,7 +150,7 @@ EOF
 }
 
 
-while getopts "hqvI:X:" arg; do
+while getopts "hqrvI:X:" arg; do
     case $arg in
 	h)
 	    usage
@@ -170,6 +171,9 @@ while getopts "hqvI:X:" arg; do
 	    ;;
         q)
             verbose=$((verbose-1))
+            ;;
+        r)
+            recursion=true
             ;;
         v)
             verbose=$((verbose+1))
@@ -236,7 +240,6 @@ install_deps () {
     if [ ! -d "${outdir}" ]; then
         outdir=.
     fi
-
     list_deps "$1" | while read dep; do
         infile=$(basename "$1")
         depfile=$(basename "${dep}")
@@ -253,7 +256,7 @@ install_deps () {
             # make sure the dependency announces itself with the local path
             install_name_tool -id "@loader_path/${depfile}" "${outdir}/${depfile}"
             # recursively call ourselves, to resolve higher-order dependencies
-            INSTALLDEPS_INDENT="${INSTALLDEPS_INDENT}    " $0 "${outdir}/${depfile}"
+            INSTALLDEPS_INDENT="${INSTALLDEPS_INDENT}    " $0 -r "${outdir}/${depfile}"
         fi
     done
 }
@@ -269,3 +272,17 @@ for f in "$@"; do
         install_deps "${f}"
     fi
 done
+
+# Code signing
+# On Monterey, binaries are automatically codesigned. Modifying them with this script renders the signature
+# invalid. When Pd loads an external with an invalid signature, it exits immediately. Thus, we need to make sure
+# that we codesign them again _after_ the localdeps process
+
+# This needs to be the absolutely last step. We don't do it while we're still inside a recursion.
+if ! $recursion; then
+  echo -n "Code signing in progress... "
+  outdir="$(dirname "$1")"
+  codesign --remove-signature "${ARGS[@]}" ${outdir}/*.dylib
+  codesign -s -  "${ARGS[@]}" ${outdir}/*.dylib
+  echo "Done"
+fi
