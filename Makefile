@@ -16,7 +16,7 @@ localdep_linux: install
 	scripts/localdeps.linux.sh "${installpath}/sfont~.${extension}"
 
 localdep_windows: install
-	scripts/localdeps.win.sh "${installpath}/sfont~.dll"
+	scripts/localdeps.win.sh "${installpath}/sfont~.${extension}"
 
 localdep_macos: install
 	scripts/localdeps.macos.sh "${installpath}/sfont~.${extension}"
