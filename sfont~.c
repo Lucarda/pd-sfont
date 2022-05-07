@@ -448,7 +448,7 @@ static void *sfont_new(t_symbol *s, int ac, t_atom *av){
         return(NULL);
     }
     else{ // load settings:
-        fluid_settings_setnum(x->x_settings, "synth.midi-channels", 16);
+        fluid_settings_setint(x->x_settings, "synth.midi-channels", 16);
         fluid_settings_setnum(x->x_settings, "synth.polyphony", 256);
         fluid_settings_setnum(x->x_settings, "synth.gain", 0.600000); // ????
         fluid_settings_setnum(x->x_settings, "synth.sample-rate", sys_getsr());
