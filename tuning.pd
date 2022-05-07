@@ -1,4 +1,4 @@
-#N canvas 448 35 562 660 10;
+#N canvas 483 64 548 650 10;
 #X obj 306 4 cnv 15 250 40 empty empty empty 12 13 0 18 #7c7c7c #e0e4dc
 0;
 #N canvas 382 141 749 319 (subpatch) 0;
@@ -20,69 +20,153 @@
 0;
 #X obj 110 40 cnv 4 4 4 empty empty synthesizer 0 28 2 18 #e0e0e0 #000000
 0;
-#X obj 2 247 cnv 3 550 3 empty \$0-pddp.cnv.inlets inlets 8 12 0 13
+#X obj 2 313 cnv 3 550 3 empty \$0-pddp.cnv.inlets inlets 8 12 0 13
 #dcdcdc #000000 0;
-#X obj 2 479 cnv 3 550 3 empty \$0-pddp.cnv.outlets outlets 8 12 0
+#X obj 2 545 cnv 3 550 3 empty \$0-pddp.cnv.outlets outlets 8 12 0
 13 #dcdcdc #000000 0;
-#X obj 2 545 cnv 3 550 3 empty \$0-pddp.cnv.argument arguments 8 12
+#X obj 2 593 cnv 3 550 3 empty \$0-pddp.cnv.argument arguments 8 12
 0 13 #dcdcdc #000000 0;
-#X obj 87 253 cnv 17 3 170 empty \$0-pddp.cnv.let.0 0 5 9 0 16 #dcdcdc
+#X obj 87 319 cnv 17 3 170 empty \$0-pddp.cnv.let.0 0 5 9 0 16 #dcdcdc
 #9c9c9c 0;
-#X obj 87 485 cnv 17 3 17 empty \$0-pddp.cnv.let.n 0 5 9 0 16 #dcdcdc
+#X obj 87 552 cnv 17 3 17 empty \$0-pddp.cnv.let.n 0 5 9 0 16 #dcdcdc
 #9c9c9c 0;
-#X obj 87 505 cnv 17 3 17 empty \$0-pddp.cnv.let.r 1 5 9 0 16 #dcdcdc
+#X obj 87 572 cnv 17 3 17 empty \$0-pddp.cnv.let.r 1 5 9 0 16 #dcdcdc
 #9c9c9c 0;
-#X text 178 485 signal;
-#X text 178 504 signal;
-#X text 136 266 load <symbol> -;
-#X text 142 422 sysex <list> -;
-#X text 100 378 bank <float \, float> -;
-#X text 94 336 touch <float \, float> -;
-#X text 160 551 1) symbol;
-#X text 221 551 - soundfont file to load (default none);
-#X text 100 350 polytouch <f \, f \, f> -;
-#X text 234 266 loads soundfont file (.sf2/.sf3 extensions implied)
+#X text 178 552 signal;
+#X text 178 571 signal;
+#X text 136 332 load <symbol> -;
+#X text 142 492 sysex <list> -;
+#X text 100 448 bank <float \, float> -;
+#X text 94 405 touch <float \, float> -;
+#X text 160 600 1) symbol;
+#X text 221 600 - soundfont file to load (default none);
+#X text 100 419 polytouch <f \, f \, f> -;
+#X text 234 332 loads soundfont file (.sf2/.sf3 extensions implied)
 ;
-#X obj 4 570 cnv 15 552 21 empty empty empty 20 12 0 14 #e0e0e0 #202020
+#X obj 4 619 cnv 15 552 21 empty empty empty 20 12 0 14 #e0e0e0 #202020
 0;
-#X obj 192 187 else/out~;
-#X text 148 322 bend <f \, f> -;
-#X text 234 422 sets sysex messages, f 51;
-#X text 106 364 pgm <float \, float> -;
-#X text 136 308 ctl <f \, f \, f> -;
-#X text 130 280 note <f \, f \, f> -;
-#X text 190 294 list -;
-#X text 234 294 same as "note" message, f 51;
-#X text 184 252 float -;
-#X text 234 252 raw MIDI input, f 51;
-#X text 221 484 - left output signal of stereo output, f 39;
-#X text 221 504 - right output signal of stereo output, f 39;
-#X text 184 436 panic -;
-#X text 234 436 resets synth and clears hanging notes, f 51;
-#X text 136 393 transp <f \, f> -;
-#X text 154 408 pan <f \, f> -;
+#X obj 176 248 else/out~;
+#X text 148 390 bend <f \, f> -;
+#X text 234 492 sets sysex messages, f 51;
+#X text 106 434 pgm <float \, float> -;
+#X text 136 376 ctl <f \, f \, f> -;
+#X text 130 347 note <f \, f \, f> -;
+#X text 190 362 list -;
+#X text 234 362 same as "note" message, f 51;
+#X text 184 318 float -;
+#X text 234 318 raw MIDI input, f 51;
+#X text 221 551 - left output signal of stereo output, f 39;
+#X text 221 571 - right output signal of stereo output, f 39;
+#X text 184 506 panic -;
+#X text 234 506 resets synth and clears hanging notes, f 51;
+#X text 136 463 transp <f \, f> -;
+#X text 154 478 pan <f \, f> -;
 #X obj 3 3 cnv 15 301 42 empty empty sfont~ 20 20 2 37 #e0e0e0 #000000
 0;
 #N canvas 0 22 450 278 (subpatch) 0;
 #X coords 0 1 100 -1 302 42 1;
 #X restore 2 3 graph;
-#X text 234 308 control change: value \, control \, channel (optional)
+#X text 234 376 control change: value \, control \, channel (optional)
 , f 51;
-#X text 234 322 bend: value \, channel (optional), f 51;
-#X text 234 336 channel aftertouch: value \, channel (optional), f
+#X text 234 390 bend: value \, channel (optional), f 51;
+#X text 234 405 channel aftertouch: value \, channel (optional), f
 51;
-#X text 234 350 key aftertouch: value \, key \, channel (optional)
+#X text 234 419 key aftertouch: value \, key \, channel (optional)
 , f 51;
-#X text 234 364 program change: program \, channel (optional), f 51
+#X text 234 434 program change: program \, channel (optional), f 51
 ;
-#X text 234 378 bank number: bank \, channel (optional), f 51;
-#X text 234 393 transposition: cents \, channel (optional), f 51;
-#X text 234 408 pan control (from -1 to 1) and channel (optional),
+#X text 234 448 bank number: bank \, channel (optional), f 51;
+#X text 234 463 transposition: cents \, channel (optional), f 51;
+#X text 234 478 pan control (from -1 to 1) and channel (optional),
 f 51;
-#X obj 193 110 keyboard 14 45 2 3 0 0 empty empty;
-#X obj 141 127 midiin;
-#X text 80 124 set MIDI input at preferences, f 11;
-#N canvas 375 99 948 525 basic 0;
+#X obj 178 126 keyboard 14 50 2 3 0 0 empty empty;
+#X obj 118 143 midiin;
+#N canvas 141 23 650 564 details 0;
+#X msg 204 316 panic;
+#N canvas 214 39 538 479 more 0;
+#X obj 127 313 outlet;
+#X obj 226 210 hsl 128 15 -1 1 0 0 empty empty empty -2 -8 0 10 #fcfcfc
+#000000 #000000 0 1;
+#X floatatom 223 233 10 0 0 0 - - - 0;
+#X msg 223 270 pan \$1;
+#X msg 276 311 gen 1 17 500;
+#X text 258 340 make it 3rd optional channel;
+#X msg 305 269 gen 1 16 1000;
+#X msg 313 241 gen 1 15 1000;
+#X text 261 386 vibrato;
+#X text 373 406 freq;
+#X msg 409 269 gen 1 16 0;
+#X msg 417 241 gen 1 15 0;
+#X msg 264 407 gen 1 24 -10000;
+#X msg 265 434 gen 1 6 500;
+#X text 344 434 width;
+#X connect 1 0 2 0;
+#X connect 2 0 3 0;
+#X connect 3 0 0 0;
+#X connect 4 0 0 0;
+#X connect 6 0 0 0;
+#X connect 7 0 0 0;
+#X connect 10 0 0 0;
+#X connect 11 0 0 0;
+#X connect 12 0 0 0;
+#X connect 13 0 0 0;
+#X restore 356 324 pd more;
+#N canvas 47 74 919 562 tuning 0;
+#X text 122 26 set-tuning: bank/program (default 0 0);
+#X text 124 54 select-tuning (bank.program \, channel);
+#X text 133 112 scale;
+#X text 135 144 remap;
+#X text 134 87 base <float> (default 60);
+#X text 62 187 base: sets base key for fundamental of the scale in
+MIDI pitch (default 60) - useful for scales that are not based on the
+octave. This needs t be set before the actual scale \, or a 2nd argument
+<1> updates the scale, f 64;
+#X text 67 309 select-tuning <f \, f \, f>: selects a tuning bank and
+program to a given channel.;
+#X text 66 257 Scale: sets a scale for the set bank/program (and also
+channel?) -;
+#X text 80 353 remap: sets the whole array of keys from 0 to 127 *
+cents;
+#X text 140 407 STRETCH???? sets scale step...;
+#X obj 377 434 remap;
+#X obj 377 393 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc
+#000000 #000000;
+#X obj 377 473 outlet;
+#X text 122 446 a4 <float> - set hz;
+#X obj 481 358 hsl 128 15 -100 100 0 0 empty empty empty -2 -8 0 10
+#fcfcfc #000000 #000000 0 1;
+#X floatatom 478 381 10 0 0 0 - - - 0;
+#X text 562 224 http://www.synthfont.com/sfspec24.pdf;
+#X text 567 266 51 coarseTune / transposition;
+#X text 481 333 cents;
+#X msg 478 422 transp \$1 0;
+#X connect 10 0 12 0;
+#X connect 11 0 10 0;
+#X connect 14 0 15 0;
+#X connect 15 0 19 0;
+#X connect 19 0 12 0;
+#X restore 129 315 pd tuning;
+#X restore 462 276 pd details;
+#N canvas 452 337 493 229 load 0;
+#X msg 70 117 load \$1;
+#X obj 70 61 openpanel;
+#X obj 70 31 bng 18 250 50 0 empty empty empty 17 7 0 10 #dcdcdc #000000
+#000000;
+#X text 96 33 load a different soundfont;
+#X obj 70 177 outlet;
+#X text 215 78 If no extension is given \, it searches for both ".sf2"
+and ".sf3" extensions. This is the same for the argument., f 38;
+#X msg 89 86 symbol sf/Theremin;
+#X msg 84 147 load sf/Famicom;
+#X connect 0 0 4 0;
+#X connect 1 0 0 0;
+#X connect 2 0 1 0;
+#X connect 6 0 0 0;
+#X connect 7 0 4 0;
+#X restore 196 188 pd load;
+#X text 248 188 <-- load files;
+#X text 57 140 set MIDI input at preferences, f 11;
+#N canvas 418 100 948 525 basic 0;
 #X obj 114 17 else/keyboard 17 80 4 3 0 0 empty empty;
 #X obj 189 154 + 1;
 #X obj 189 131 hradio 15 1 0 4 empty empty empty 0 -8 0 10 #dfdfdf
@@ -159,9 +243,20 @@ or if it fails. Verbosity is also set by the "verbose" message., f
 #X text 625 111 Ain't got none? Download some Soundfonts from:, f
 30;
 #X symbolatom 403 459 15 0 0 0 - - - 16;
-#X text 388 494 preset name when loading file;
+#X text 384 494 preset name when loading file;
 #X floatatom 206 195 5 0 0 0 - - - 0;
 #X obj 232 352 ./sfont~ 1 sf/waves.sf2, f 29;
+#X msg 101 427 ctl 120 127 1;
+#X msg 109 385 ctl 66 \$1 1;
+#X obj 109 358 tgl 17 0 empty empty empty 17 7 0 10 #dfdfdf #000000
+#000000 0 127;
+#X obj 30 356 tgl 17 0 empty empty empty 17 7 0 10 #dfdfdf #000000
+#000000 0 127;
+#X msg 30 383 ctl 64 \$1 1;
+#X msg 34 463 ctl 1 \$1 1;
+#X floatatom 34 437 5 0 127 0 - - - 0;
+#X msg 126 482 ctl 1 \$1 1;
+#X floatatom 126 456 6 0 127 0 - - - 0;
 #X connect 0 0 5 0;
 #X connect 1 0 3 0;
 #X connect 2 0 1 0;
@@ -191,7 +286,15 @@ or if it fails. Verbosity is also set by the "verbose" message., f
 #X connect 45 0 16 0;
 #X connect 45 1 16 1;
 #X connect 45 2 42 0;
-#X restore 486 175 pd basic;
+#X connect 46 0 45 0;
+#X connect 47 0 45 0;
+#X connect 48 0 47 0;
+#X connect 49 0 50 0;
+#X connect 50 0 45 0;
+#X connect 51 0 45 0;
+#X connect 52 0 51 0;
+#X connect 54 0 53 0;
+#X restore 472 182 pd basic;
 #N canvas 597 74 666 434 MIDI-in 0;
 #N canvas 964 117 329 629 MIDI-input 0;
 #X obj 69 126 ctlin;
@@ -292,89 +395,18 @@ below:;
 #X connect 0 0 4 0;
 #X connect 1 0 4 0;
 #X restore 174 116 pd sysex;
-#X msg 175 276 ctl 120 127 1;
-#X msg 183 234 ctl 66 \$1 1;
-#X obj 183 207 tgl 17 0 empty empty empty 17 7 0 10 #dfdfdf #000000
-#000000 0 127;
-#X obj 104 205 tgl 17 0 empty empty empty 17 7 0 10 #dfdfdf #000000
-#000000 0 127;
-#X msg 104 232 ctl 64 \$1 1;
-#X msg 108 312 ctl 1 \$1 1;
-#X floatatom 108 286 5 0 127 0 - - - 0;
-#X msg 200 331 ctl 1 \$1 1;
-#X floatatom 200 305 6 0 127 0 - - - 0;
-#X obj 308 184 else/midi;
-#X obj 329 263 else/suspedal;
 #X connect 3 0 4 0;
 #X connect 4 0 2 0;
 #X connect 6 0 5 0;
-#X connect 10 0 9 0;
-#X connect 11 0 12 0;
-#X connect 14 0 13 0;
-#X connect 16 0 15 0;
-#X restore 474 197 pd MIDI-in;
-#X text 234 280 note: key \, velocity \, channel (optional);
-#X text 23 84 [sfont~] is a sampler synthesizer that plays SoundFont
-files. It is based on FluidSynth., f 76;
-#X obj 364 200 print name;
-#X obj 193 163 ./sfont~ sf/Famicom, f 29;
-#N canvas 141 23 650 564 more 0;
-#X msg 204 316 panic;
-#N canvas 214 39 538 479 more 0;
-#X obj 127 313 outlet;
-#X obj 226 210 hsl 128 15 -1 1 0 0 empty empty empty -2 -8 0 10 #fcfcfc
-#000000 #000000 0 1;
-#X floatatom 223 233 10 0 0 0 - - - 0;
-#X msg 223 270 pan \$1;
-#X msg 276 311 gen 1 17 500;
-#X text 258 340 make it 3rd optional channel;
-#X msg 305 269 gen 1 16 1000;
-#X msg 313 241 gen 1 15 1000;
-#X text 261 386 vibrato;
-#X text 373 406 freq;
-#X msg 409 269 gen 1 16 0;
-#X msg 417 241 gen 1 15 0;
-#X msg 264 407 gen 1 24 -10000;
-#X msg 265 434 gen 1 6 500;
-#X text 344 434 width;
-#X connect 1 0 2 0;
-#X connect 2 0 3 0;
-#X connect 3 0 0 0;
-#X connect 4 0 0 0;
-#X connect 6 0 0 0;
-#X connect 7 0 0 0;
-#X connect 10 0 0 0;
-#X connect 11 0 0 0;
-#X connect 12 0 0 0;
-#X connect 13 0 0 0;
-#X restore 356 324 pd more;
-#X msg 306 251 pan;
-#X restore 492 219 pd more;
-#X text 136 458 version/info/verbose (also arg) - outlet;
-#N canvas 452 337 493 229 load 0;
-#X msg 70 117 load \$1;
-#X obj 70 61 openpanel;
-#X obj 70 31 bng 18 250 50 0 empty empty empty 17 7 0 10 #dcdcdc #000000
-#000000;
-#X text 96 33 load a different soundfont;
-#X obj 70 177 outlet;
-#X text 215 78 If no extension is given \, it searches for both ".sf2"
-and ".sf3" extensions. This is the same for the argument., f 38;
-#X msg 89 86 symbol sf/Theremin;
-#X msg 84 147 load sf/Famicom;
-#X connect 0 0 4 0;
-#X connect 1 0 0 0;
-#X connect 2 0 1 0;
-#X connect 6 0 0 0;
-#X connect 7 0 4 0;
-#X restore 478 142 pd load;
-#X text 446 114 <-- load files;
-#X obj 87 525 cnv 17 3 17 empty \$0-pddp.cnv.let.r 2 5 9 0 16 #dcdcdc
-#9c9c9c 0;
-#X text 167 524 anything;
-#X text 221 524 - info outpute, f 39;
-#X connect 53 0 61 0;
-#X connect 54 0 61 0;
-#X connect 61 0 27 0;
-#X connect 61 1 27 1;
-#X connect 61 2 60 0;
+#X restore 460 204 pd MIDI-in;
+#X text 234 347 note: key \, velocity \, channel (optional);
+#X text 35 83 [sfont~] is a sampler synthesizer that plays SoundFont
+files. It is based on FluidSynth., f 72;
+#X obj 349 251 print name;
+#X obj 178 214 ./sfont~ sf/Famicom, f 29;
+#X connect 53 0 64 0;
+#X connect 54 0 64 0;
+#X connect 56 0 64 0;
+#X connect 64 0 27 0;
+#X connect 64 1 27 1;
+#X connect 64 2 63 0;
