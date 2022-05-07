@@ -199,22 +199,18 @@ fi
 #@END_UTILITIES@
 fi
 
-
-library_in_exclude_list() {
-    # arg1: library name
-    # returns 0 if arg1 is found in exclude list, otherwise 1
-    local libexname="$1"
-    skip=1
-    set -f
-    for expat in $(echo "${ld_exclude_list}"); do
-        if echo "$(basename $libexname)" | grep "${expat}" > /dev/null; then
-            skip=0
-            break
-        fi
-    done
-    set +f
-    return $skip
-}
+# detect arch
+arch=$(uname -m)
+case $arch in
+    x86_64)
+        arch=amd64
+        ;;
+    i686)
+        arch=i386
+        ;;
+    armv7l)
+        arch=arm
+esac
 
 list_deps() {
     local libpath
@@ -233,7 +229,8 @@ install_deps () {
     # make a local copy of all linked libraries of given binary
     # and set RUNPATH to $ORIGIN (exclude "standard" libraries)
     # arg1: binary to check
-    local outdir=$(dirname "$1")
+    local outdir
+    outdir="$(dirname "$1")/${arch}"
     local outfile
     if [ ! -d "${outdir}" ]; then
         outdir=.
@@ -253,7 +250,7 @@ install_deps () {
             patchelf --set-rpath \$ORIGIN "${outfile}"
         fi
     done
-    patchelf --set-rpath \$ORIGIN "${1}"
+    patchelf --set-rpath \$ORIGIN/${arch} "${1}"
 }
 
 
@@ -267,5 +264,7 @@ for f in "$@"; do
         error "Skipping '${f}'. Is it a binary file?"
         continue
     fi
+    depdir="$(dirname ${f})/${arch}"
+    mkdir -p "${depdir}"
     install_deps "${f}"
 done
