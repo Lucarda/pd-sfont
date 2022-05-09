@@ -1,5 +1,5 @@
 // Soundfont player based on FluidSynth (https://www.fluidsynth.org/)
-// by Porres and others
+// Copyright by Porres, see https://github.com/porres/pd-sfont
 
 /*
 LICENSE:
@@ -10,7 +10,7 @@ the Free Software Foundation; either version 2 of the License, or
 
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See thever
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
@@ -40,7 +40,9 @@ typedef struct _sfont{
     t_canvas           *x_canvas;
     t_symbol           *x_sfname;
     t_outlet           *x_info_out;
+    float               x_base;
     int                 x_sysex;
+    int                 x_ch;
     int                 x_verbosity;
     int                 x_count;
     int                 x_ready;
@@ -67,7 +69,7 @@ static void sfont_dsp(t_sfont *x, t_signal **sp){
 }
 
 static void fluid_getversion(void){
-    post("[sfont~] version 1.0-alpha (using fluidsynth %s)", FLUIDSYNTH_VERSION);
+    post("[sfont~] version 1.0-rc2 (using fluidsynth %s)", FLUIDSYNTH_VERSION);
 }
 
 static void fluid_verbose(t_sfont *x, t_floatarg f){
@@ -102,7 +104,13 @@ static void fluid_note(t_sfont *x, t_symbol *s, int ac, t_atom *av){
         int key = atom_getintarg(0, ac, av);
         int vel = atom_getintarg(1, ac, av);
         int chan = ac > 2 ? atom_getintarg(2, ac, av) : 1; // channel starts at zero???
+        if(chan > x->x_ch){
+            post("[sfont~]: note channel (%d) out of range (max is: %d)", chan, x->x_ch);
+            return;
+        }
         fluid_synth_noteon(x->x_synth, chan-1, key, vel);
+//        if(flag == FLUID_FAILED)
+//            post("[sfont~]: note message error (pitch (%d) velocity (%d)");
     }
 }
 
@@ -112,23 +120,32 @@ static void fluid_program_change(t_sfont *x, t_symbol *s, int ac, t_atom *av){
         int pgm = atom_getintarg(0, ac, av);
         x->x_pgm = pgm < 0 ? 0 : pgm > 127 ? 127 : pgm;
         int ch = ac > 1 ? atom_getintarg(1, ac, av) - 1: 0;
+        if(ch > x->x_ch){
+            post("[sfont~]: program channel (%d) out of range (max is: %d)", ch, x->x_ch);
+            return;
+        }
         int fail = fluid_synth_program_change(x->x_synth, ch, x->x_pgm);
         if(!fail){
-            fluid_preset_t* preset = fluid_sfont_get_preset(x->x_sfont, x->x_bank, x->x_pgm);
+            fluid_preset_t* preset = fluid_synth_get_channel_preset(x->x_synth, ch);
+            int bank = fluid_preset_get_banknum(preset);
             if(preset == NULL){
                 if(x->x_verbosity)
-                    post("[sfont~]: couldn't load progam %d in bank %d", x->x_pgm, x->x_bank);
+                    post("[sfont~]: couldn't load progam %d from bank %d", x->x_pgm, bank);
             }
             else{
-                const char* name = fluid_preset_get_name(preset);
+                x->x_bank = bank;
+                const char* pname = fluid_preset_get_name(preset);
                 if(x->x_verbosity)
                     post("[sfont~]: loaded \"%s\" (bank %d, pgm %d) in channel %d",
-                        name, x->x_bank, x->x_pgm, ch + 1);
-                outlet_symbol(x->x_info_out, gensym(name));
+                        pname, x->x_bank, x->x_pgm, ch + 1);
+                t_atom at[1];
+                SETSYMBOL(&at[0], gensym(pname));
+                outlet_anything(x->x_info_out, gensym("pname"), 1, at);
             }
         }
         else 
-            post("[sfont~]: couldn't load progam %d from bank %d into channel %d", x->x_pgm, x->x_bank, ch + 1);
+            post("[sfont~]: couldn't load progam %d from bank %d into channel %d",
+                 x->x_pgm, x->x_bank, ch+1);
     }
 }
 
@@ -139,21 +156,27 @@ static void fluid_bank(t_sfont *x, t_symbol *s, int ac, t_atom *av){
         if(bank < 0)
             bank = 0;
         int ch = ac > 1 ? atom_getintarg(1, ac, av) - 1 : 0;
+        if(ch > x->x_ch){
+            post("[sfont~]: bank channel (%d) out of range (max is: %d)", ch, x->x_ch);
+            return;
+        }
         int fail = fluid_synth_bank_select(x->x_synth, ch, bank);
         if(!fail){
             x->x_bank = bank;
             fluid_preset_t* preset = fluid_sfont_get_preset(x->x_sfont, x->x_bank, x->x_pgm);
             if(preset == NULL){
                 if(x->x_verbosity)
-                    post("[sfont~]: couldn't load progam %d in bank %d", x->x_pgm, x->x_bank);
+                    post("[sfont~]: couldn't load progam %d from bank %d", x->x_pgm, x->x_bank);
             }
             else{
                 fluid_synth_program_reset(x->x_synth);
-                const char* name = fluid_preset_get_name(preset);
+                const char* pname = fluid_preset_get_name(preset);
                 if(x->x_verbosity)
                     post("[sfont~]: loaded \"%s\" (bank %d, pgm %d) in channel %d",
-                         name, x->x_bank, x->x_pgm, ch + 1);
-                outlet_symbol(x->x_info_out, gensym(name));
+                         pname, x->x_bank, x->x_pgm, ch + 1);
+                t_atom at[1];
+                SETSYMBOL(&at[0], gensym(pname));
+                outlet_anything(x->x_info_out, gensym("pname"), 1, at);
             }
         }
         else
@@ -168,8 +191,8 @@ static void fluid_bank(t_sfont *x, t_symbol *s, int ac, t_atom *av){
 static void fluid_control_change(t_sfont *x, t_symbol *s, int ac, t_atom *av){
     s = NULL;
     if(ac == 2 || ac == 3){
-        int ctrl = atom_getintarg(0, ac, av);
-        int val = atom_getintarg(1, ac, av);
+        int val = atom_getintarg(0, ac, av);
+        int ctrl = atom_getintarg(1, ac, av);
         int chan = ac > 2 ? atom_getintarg(2, ac, av) : 1;
         fluid_synth_cc(x->x_synth, chan-1, ctrl, val);
     }
@@ -184,7 +207,7 @@ static void fluid_pitch_bend(t_sfont *x, t_symbol *s, int ac, t_atom *av){
     }
 }
 
-static void fluid_gen(t_sfont *x, t_symbol *s, int ac, t_atom *av){
+/*static void fluid_gen(t_sfont *x, t_symbol *s, int ac, t_atom *av){
     s = NULL;
     if(ac == 2){
         int param = atom_getintarg(1, ac, av);
@@ -197,27 +220,55 @@ static void fluid_gen(t_sfont *x, t_symbol *s, int ac, t_atom *av){
         float value = atom_getfloatarg(2, ac, av);
         fluid_synth_set_gen(x->x_synth, chan-1, param, value);
     }
+}*/
+
+static void activate_key_tuning(t_sfont *x, double *pitches){
+    int ch = 0, tune_bank = 0, tune_prog = 0;
+    fluid_synth_activate_key_tuning(x->x_synth, tune_bank, tune_prog, "remap-tuning", pitches, 1);
+    fluid_synth_activate_tuning(x->x_synth, ch, tune_bank, tune_prog, 1);
 }
 
-/*static void fluid_remap(t_sfont *x, t_symbol *s, int ac, t_atom *av){
+static void fluid_remap(t_sfont *x, t_symbol *s, int ac, t_atom *av){
     s = NULL;
-    if(x->x_synth == NULL)
-        return;
     if(ac == 128){
         double pitches[128];
         for(int i = 0; i < 128; i++)
             pitches[i] = atom_getfloatarg(i, ac, av) * 100;
-        int ch = 0;
-        int tune_bank = 0;
-        int tune_prog = 0;
-        fluid_synth_activate_key_tuning(x->x_synth, tune_bank, tune_prog, "remap-tuning", pitches, 1);
-        fluid_synth_activate_tuning(x->x_synth, ch, tune_bank, tune_prog, 1);
+        activate_key_tuning(x, pitches);
     }
     else
-        post("wrong size");
+        post("[sinfo~]: remap needs 128 key values");
 }
 
-static void fluid_octave_tuning(t_sfont *x, t_symbol *s, int ac, t_atom *av){
+static void fluid_scale(t_sfont *x, t_symbol *s, int ac, t_atom *av){
+    s = NULL;
+    double scale[ac];
+    int n_m1 = ac-1;
+    int i;
+    for(i = 0; i < ac; i++) // set array{
+        scale[i] = atom_getfloatarg(i, ac, av);
+    int n1 = -(int)x->x_base, div;
+    n1 -= (n_m1-1);
+    div = n1 / n_m1;
+    float shift_down = div * scale[n_m1] + x->x_base * 100.;
+    int count = (int)(-x->x_base) % n_m1;
+    if(count < 0)
+        count += n_m1;
+    float sum = scale[count] + shift_down;
+    double pitches[128];
+    pitches[0] = sum;
+    for(i = 1; i < 128; i++){
+        count = (count % n_m1) + 1;
+        pitches[i] = (sum += (scale[count] - scale[count-1]));
+    }
+    activate_key_tuning(x, pitches);
+}
+
+static void fluid_base(t_sfont *x, t_float f){
+    x->x_base = f < 0 ? 0 : f > 127 ? 127 : f;
+}
+
+/*static void fluid_octave_tuning(t_sfont *x, t_symbol *s, int ac, t_atom *av){
     s = NULL;
     if(x->x_synth == NULL)
         return;
@@ -263,9 +314,8 @@ static void fluid_sysex(t_sfont *x, t_symbol *s, int ac, t_atom *av){
             buf[len] = atom_getintarg(len, ac, av);
             len++;
         }
-        // TODO: In order to handle bulk dump requests in the future, we will
-        // have to pick up fluidsynth's response here and output that to a
-        // control outlet (which doesn't exist at present).
+        // TODO: output fluidsynth's response to info outlet
+        // in order to handle bulk dump requests
         fluid_synth_sysex(x->x_synth, buf, len, NULL, NULL, NULL, 0);
     }
 }
@@ -364,14 +414,13 @@ static void fluid_info(t_sfont *x){
         const char* name = fluid_preset_get_name(preset);
         post("%03d - bank (%d) pgm (%d) name (%s)", i++, bank, pgm, name);
     }
-/*    for(i = 0; i < 16; i++){
-        post("i (%d)", i);
+/*    for(i = 0; i < x->x_ch; i++){ // get bank and program loaded in channels
         if((preset = fluid_synth_get_channel_preset(x->x_synth, i)) != NULL){
            int bank = fluid_preset_get_banknum(preset), pgm = fluid_preset_get_num(preset);
            const char* name = fluid_preset_get_name(preset);
-           post("channel %d: bank (%d) pgm (%d) name (%s)", i++, bank, pgm, name);
+           post("channel %d: bank (%d) pgm (%d) name (%s)", i, bank, pgm, name);
         }
-    }*/ // didn't fucking work... motherfucker
+    }*/
     post("\n");
 }
 
@@ -412,7 +461,9 @@ static void fluid_load(t_sfont *x, t_symbol *name){
         fluid_preset_t* preset = fluid_sfont_get_preset(x->x_sfont, x->x_bank = 0, x->x_pgm = 0);
         if(preset){
             const char* pname = fluid_preset_get_name(preset);
-            outlet_symbol(x->x_info_out, gensym(pname));
+            t_atom at[1];
+            SETSYMBOL(&at[0], gensym(pname));
+            outlet_anything(x->x_info_out, gensym("pname"), 1, at);
         }
     }
     else
@@ -432,6 +483,7 @@ static void *sfont_new(t_symbol *s, int ac, t_atom *av){
     x->x_synth = NULL;
     x->x_settings = NULL;
     x->x_sfname = NULL;
+    x->x_base = 60;
     x->x_canvas = canvas_getcurrent();
     x->x_sysex = x->x_ready = x->x_count = 0;
     x->x_data = x->x_channel = x->x_type = 0;
@@ -443,7 +495,7 @@ static void *sfont_new(t_symbol *s, int ac, t_atom *av){
         pd_error(x, "[sfont~]: bug couldn't create synth settings\n");
         return(NULL);
     }
-    int ch = 16;
+    x->x_ch = 16;
     int arg = 0;
     double g = 0.4;
     t_symbol *filename = NULL;
@@ -461,11 +513,8 @@ static void *sfont_new(t_symbol *s, int ac, t_atom *av){
             else if(sym == gensym("-ch") && !arg){
                 ac--, av++;
                 if(ac && av->a_type == A_FLOAT){
-                    ch = atom_getfloatarg(0, ac, av);
-                    if(ch < 16)
-                        ch = 16;
-                    if(ch > 256)
-                        ch = 256;
+                    int ch = atom_getfloatarg(0, ac, av);
+                    x->x_ch = ch < 16 ? 16 : ch > 256 ? 256 : ch;
                     ac--, av++;
                 }
                 else
@@ -496,10 +545,12 @@ static void *sfont_new(t_symbol *s, int ac, t_atom *av){
             goto errstate;
     }
     fluid_settings_setint(x->x_settings, "synth.ladspa.active", 0);
-    fluid_settings_setint(x->x_settings, "synth.midi-channels", ch);
+    fluid_settings_setint(x->x_settings, "synth.midi-channels", x->x_ch);
 //  fluid_settings_setint(x->x_settings, "synth.polyphony", 256);
     fluid_settings_setnum(x->x_settings, "synth.gain", g);
     fluid_settings_setnum(x->x_settings, "synth.sample-rate", sys_getsr());
+    fluid_settings_setnum(x->x_settings, "synth.sample-rate", sys_getsr());
+//    fluid_settings_setstr(x->x_settings, "synth.midi-bank-select", "gs");
     x->x_synth = new_fluid_synth(x->x_settings); // Create fluidsynth instance:
     if(x->x_synth == NULL){
         pd_error(x, "[sfont~]: bug couldn't create fluidsynth instance");
@@ -519,7 +570,7 @@ void sfont_tilde_setup(void){
     class_addmethod(sfont_class, (t_method)sfont_dsp, gensym("dsp"), A_CANT, 0);
     class_addfloat(sfont_class, (t_method)fluid_float); // raw midi input
     class_addmethod(sfont_class, (t_method)fluid_load, gensym("load"), A_SYMBOL, 0);
-    class_addmethod(sfont_class, (t_method)fluid_gen, gensym("gen"), A_GIMME, 0);
+//    class_addmethod(sfont_class, (t_method)fluid_gen, gensym("gen"), A_GIMME, 0);
     class_addmethod(sfont_class, (t_method)fluid_bank, gensym("bank"), A_GIMME, 0);
     class_addmethod(sfont_class, (t_method)fluid_note, gensym("note"), A_GIMME, 0);
     class_addlist(sfont_class, (t_method)fluid_note); // list input is the same as "note"
@@ -532,17 +583,14 @@ void sfont_tilde_setup(void){
     class_addmethod(sfont_class, (t_method)fluid_panic, gensym("panic"), 0);
     class_addmethod(sfont_class, (t_method)fluid_transp, gensym("transp"), A_GIMME, 0);
     class_addmethod(sfont_class, (t_method)fluid_pan, gensym("pan"), A_GIMME, 0);
-//    class_addmethod(sfont_class, (t_method)fluid_remap, gensym("remap"), A_GIMME, 0);
-//    class_addmethod(sfont_class, (t_method)fluid_scale, gensym("scale"), A_GIMME, 0);
+    class_addmethod(sfont_class, (t_method)fluid_scale, gensym("scale"), A_GIMME, 0);
+    class_addmethod(sfont_class, (t_method)fluid_base, gensym("base"), A_FLOAT, 0);
+    class_addmethod(sfont_class, (t_method)fluid_remap, gensym("remap"), A_GIMME, 0);
 //    class_addmethod(sfont_class, (t_method)fluid_a4, gensym("a4"), A_FLOAT, 0);
     class_addmethod(sfont_class, (t_method)fluid_getversion, gensym("version"), 0);
     class_addmethod(sfont_class, (t_method)fluid_verbose, gensym("verbose"), A_FLOAT, 0);
     class_addmethod(sfont_class, (t_method)fluid_info, gensym("info"), 0);
 }
 
-// let's steal ideas from:
-// https://github.com/uliss/pure-data/blob/ceammc/ceammc/ext/src/misc/fluid.cpp
-
 // https://www.fluidsynth.org/api/
-
 // http://www.synthfont.com/sfspec24.pdf

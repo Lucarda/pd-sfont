@@ -6,9 +6,11 @@
 
 ### About:
 
-[sfont~] is an external for Pure Data that loads soundfont files for a fullblown orchestra. It is based on the FluidSynth open source project, a Real-Time SoundFont Software Synthesizer (see https://www.fluidsynth.org and https://github.com/FluidSynth/fluidsynth). At this version, sfont~ uses FluidSynth 2.2.7!
+[sfont~] is an external for Pure Data that loads soundfont files for a fullblown orchestra. It is based on the FluidSynth open source project, a Real-Time SoundFont Software Synthesizer (see <https://www.fluidsynth.org> and <https://github.com/FluidSynth/fluidsynth>). Currently, [sfont~] uses FluidSynth 2.2.7!
 
 Copyright: Alexandre Torres Porres and others
+
+Even though [sfont~] has its own repository and can be compiled here and used on its own, it is part of the ELSE library of externals by Alexandre Porres, see <https://github.com/porres/pd-else>.
 
 --------------------------------------------------------------------------
 
@@ -21,7 +23,7 @@ Distributed under the GPLv2+, please check the LICENSE file for details.
 
 #### Building [sfont~] for Pd Vanilla:
 
-First you need to install  **FluidSynth** (https://www.fluidsynth.org/) in your system. You can run the makefile after that.
+First you need to install **FluidSynth** (<https://www.fluidsynth.org/>) in your system. You can run the makefile after that.
 
 This project relies on the build system called "pd-lib-builder" by Katja Vetter (see: <https://github.com/pure-data/pd-lib-builder>). PdLibBuilder tries to find the Pd source directory at several common locations, but when this fails, you have to specify the path yourself using the pdincludepath variable. Example:
 
@@ -45,7 +47,7 @@ Cross compiling is also possible with something like this
 
 #### - macOS
 
-Download and install **FluidSynth** via homebrew (https://brew.sh/).
+Download and install **FluidSynth** via homebrew (<https://brew.sh/>).
 
 - "brew install fluidsynth"
 
@@ -116,8 +118,8 @@ The result can be uploaded to Deken, since it runs also on systems where the flu
 
 ### Acknowledgements :
 
-Thanks to the **authors of fluidsynth** (https://github.com/FluidSynth/fluidsynth/blob/master/AUTHORS). Also thanks for those who worked on previous externals for Pd that loads fluidsynth, such as **Larry Troxler**, author of the [iiwu~] external, which was the basis of the [fluid~] external by **Frank Barknecht** in [04/04/2003]. **Jonathan Wilkes** Ported [fluid~] from Flext/C++ to Pd's API using plain C/pdlibbuilder. **Albert Gräf** expanded the functionality of the object to take more MIDI messages. The ceammc developers also have an external named [fluid~] that is not related to the one first created by Barknecht. Both [fluid~] objects were used as inspiration for this [sfont~] external. 
+Thanks to the **authors of fluidsynth** (<https://github.com/FluidSynth/fluidsynth/blob/master/AUTHORS>). Also thanks for those who worked on previous externals for Pd that loads fluidsynth, such as **Larry Troxler**, author of the [iiwu~] external, which was the basis of the [fluid~] external by **Frank Barknecht** in [04/04/2003]. **Jonathan Wilkes** Ported [fluid~] from Flext/C++ to Pd's API using plain C/pdlibbuilder. **Albert Gräf** expanded the functionality of the object to take more MIDI messages. The Pd-ceammc (<https://github.com/uliss/pure-data>) developers (**Serge Poltavsky** and **Alex Nadzharov**) also have an external named [fluid~] that is not related to the one first created by Barknecht. Both [fluid~] objects were used as inspiration for this [sfont~] external, but [sfont~] has its own design with different and special functionalities. 
 
-Special thanks to **IOhannes Zmölnig** for the magical script that copies the dynamic libraries into the external folder and links them correctly. Thanks to **Lucas Cordiviola** and **Roman Haefeli** for helping on how to build for windows/Linux and **others from the pd-list** that also helped.
+Special thanks to **IOhannes Zmölnig** for the magical script that copies the dynamic libraries into the external folder and links them correctly. Thanks to **Lucas Cordiviola** and **Roman Haefeli** for helping on how to build for Mac/Windows/Linux and **others from the pd-list** that also helped.
 
 -------------------------------------------------------------------------

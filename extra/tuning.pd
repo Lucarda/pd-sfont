@@ -1,0 +1,29 @@
+#N canvas 483 64 829 573 10;
+#X text 122 26 set-tuning: bank/program (default 0 0);
+#X text 124 54 select-tuning (bank.program \, channel);
+#X text 133 112 scale;
+#X text 135 144 remap;
+#X text 134 87 base <float> (default 60);
+#X text 62 187 base: sets base key for fundamental of the scale in
+MIDI pitch (default 60) - useful for scales that are not based on the
+octave. This needs t be set before the actual scale \, or a 2nd argument
+<1> updates the scale, f 64;
+#X text 67 309 select-tuning <f \, f \, f>: selects a tuning bank and
+program to a given channel.;
+#X text 66 257 Scale: sets a scale for the set bank/program (and also
+channel?) -;
+#X text 80 353 remap: sets the whole array of keys from 0 to 127 *
+cents;
+#X text 140 407 STRETCH???? sets scale step...;
+#X obj 478 448 outlet;
+#X text 122 446 a4 <float> - set hz;
+#X obj 481 358 hsl 128 15 -100 100 0 0 empty empty empty -2 -8 0 10
+#fcfcfc #000000 #000000 0 1;
+#X floatatom 478 381 10 0 0 0 - - - 0;
+#X text 562 224 http://www.synthfont.com/sfspec24.pdf;
+#X text 567 266 51 coarseTune / transposition;
+#X text 481 333 cents;
+#X msg 478 412 transp \$1 0;
+#X connect 12 0 13 0;
+#X connect 13 0 17 0;
+#X connect 17 0 10 0;
